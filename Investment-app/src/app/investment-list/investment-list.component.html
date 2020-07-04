@@ -1,0 +1,17 @@
+<mat-accordion multi="true" *ngIf="houses.length>0">
+  <mat-expansion-panel *ngFor="let house of houses">
+    <mat-expansion-panel-header>
+      {{house.name}} : {{house.id}}
+    </mat-expansion-panel-header>
+    <div>
+      Adress: {{house.adress}}
+      <br>
+      Location: {{house.location}}
+      <br>
+      <div class="edit-button">
+        <a mat-flat-button color="primary" [routerLink]="['/house',house.id]">Details</a>
+      </div>
+    </div>
+      
+  </mat-expansion-panel>
+</mat-accordion>

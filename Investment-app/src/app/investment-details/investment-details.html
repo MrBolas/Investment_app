@@ -1,0 +1,69 @@
+<!--Add form to add transaction-->
+<mat-card *ngIf="loaded">
+<h2>{{house.name}}</h2>
+
+<!--Add title of the house and something like a Jumbotron with different graphics for analysis-->
+
+</mat-card>
+
+<mat-card>
+  <form (submit)="onSaveForm(transactionForm)" #transactionForm="ngForm">
+    <div class="flex-container">
+      <div>
+        <mat-label>Value  </mat-label>
+        
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="value" placeholder="480 €" [(ngModel)] = "value" required>
+        </mat-form-field>
+      </div>
+      
+      <div>
+        <mat-label>Short description  </mat-label>
+        
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="description" placeholder="weekly booking" [(ngModel)] = "description" required>
+        </mat-form-field>
+      </div>
+      
+      <div class="add-button">
+      <br>  
+        <button mat-flat-button color="primary" type="submit">Add</button>
+      </div>
+    </div>
+  </form>
+</mat-card>
+
+<mat-table [dataSource]="transactions" class="mat-elevation-z8">
+
+    <!-- Action Column -->
+    <ng-container matColumnDef="Action">
+      <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+      <mat-cell *matCellDef="let transaction">
+        <button (click)="onDeleteTableEntry(transaction.id, transaction.value)" mat-mini-fab color="accent" aria-label="Example icon button with a menu icon">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="Date">
+      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+      <mat-cell *matCellDef="let transaction"> {{transaction.date}} </mat-cell>
+    </ng-container>
+  
+    <!-- Value Column -->
+    <ng-container matColumnDef="value">
+      <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+      <mat-cell *matCellDef="let transaction"> {{transaction.value}} € </mat-cell>
+    </ng-container>
+  
+    <!-- Weight Column -->
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+      <mat-cell *matCellDef="let transaction"> {{transaction.description}} </mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>

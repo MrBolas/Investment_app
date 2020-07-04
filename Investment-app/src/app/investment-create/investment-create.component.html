@@ -1,0 +1,31 @@
+<mat-card>
+    <form (submit)="onSaveForm(investmentForm)" #investmentForm="ngForm">
+        
+        <p>
+            <mat-label>House name</mat-label>
+            <br>
+            <mat-form-field appearance="outline">
+                <input matInput name="name" placeholder="Copacabana Garden House" [(ngModel)] = "name" required>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-label>Adress</mat-label>
+           <br>
+            <mat-form-field appearance="outline">
+                <input matInput name="adress" placeholder="Street ..." [(ngModel)] = "adress" required>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-label>Location</mat-label>
+            <br>
+            <mat-form-field appearance="outline">
+                <input matInput name="location" placeholder="Vilamoura" [(ngModel)] = "location" required>
+            </mat-form-field>
+        </p>
+
+        <button mat-raised-button color="primary" type="submit"
+        >Save</button>
+    </form>
+</mat-card>
