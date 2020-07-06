@@ -1,12 +1,13 @@
 <mat-toolbar color="primary">
     
-     <!-- To be replaced by image -->
-    <span><a routerLink="/list">InvestmentApp</a></span>
+    <button mat-icon-button color="accent" routerLink="/list" aria-label="go_to_list">
+        <mat-icon>menu</mat-icon>
+    </button>
     
     <span class="fill-remaining-space"></span>
-    
-    <span><a [routerLink]="['/list']">List</a></span>
-    <span><a> </a></span>
-    <span><a routerLink="/create">Create</a></span>
+
+    <button mat-icon-button color="accent" routerLink="/create" aria-label="create_home_button">
+        <mat-icon>home</mat-icon>
+    </button>
     
 </mat-toolbar>

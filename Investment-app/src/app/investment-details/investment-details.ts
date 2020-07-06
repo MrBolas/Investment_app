@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 export class InvestmentDetailsComponent implements OnInit{
     private investmentId: string;
     private investmentSub : Subscription;
+    netValue: number;
     loaded = true;
     displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
     house: House;
@@ -40,9 +41,17 @@ export class InvestmentDetailsComponent implements OnInit{
               this.loaded = true;
               this.house = investmentData.house;
               this.transactions = [...this.house.incomeList, ...this.house.expenseList];
+              this.calculateNet();
             })
           }
     })
+  }
+
+  calculateNet(){
+    this.netValue = this.transactions.map(a => a.value).reduce(function(a, b)
+    {
+      return a + b;
+    });
   }
 
   onSaveForm( form: NgForm){
