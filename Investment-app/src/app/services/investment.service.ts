@@ -12,13 +12,19 @@ import { map } from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
 export class InvestmentService {
-    private houses: House[] = [];
-    private housesUpdated = new Subject<House[]>();
+    private houses: House[] = [];                   //for the list component
+    private house: House;                           //for the details component
+    private housesUpdated = new Subject<House[]>(); //for the list component
+    private houseUpdated = new Subject<House>();    //for the details component
 
     constructor(private http: HttpClient, private router: Router) { }
 
     getInvestmentUpdateListener(){
         return this.housesUpdated.asObservable();
+    }
+
+    getOneInvestmentUpdateListener(){
+        return this.houseUpdated.asObservable();
     }
 
     addHouse(name: string, adress: string, location: string, incomeList: Income[], expenseList: Expense[]){
@@ -30,7 +36,6 @@ export class InvestmentService {
             incomeList: incomeList,
             expenseList: expenseList
         };
-        console.log(house);
         this.http.post<{message: string, houseId: string}>('http://localhost:3000/api/house', house)
         .subscribe((responseData)=>{
             const id = responseData.houseId;
@@ -64,16 +69,22 @@ export class InvestmentService {
     }
 
     getInvestment(id: string){
-        return this.http.get<{message: string, house:any}>('http://localhost:3000/api/house/'+id);
+        this.http.get<{message: string, house:any}>('http://localhost:3000/api/house/'+id)
+        .subscribe((updatedReply) => {
+            this.house = updatedReply.house;
+            this.houseUpdated.next(this.house);
+            this.router.navigate(["/house/"+id]);
+        })
     }
 
     addIncome(house: House, income_entry: Income){
-        console.log("service sends put request to add an income entry")
         // Adds new income entry
         house.incomeList.push(income_entry);
 
         this.http.put('http://localhost:3000/api/house/'+house["_id"], house)
         .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
             this.router.navigate(["/house/"+house['_id']]);
         })
     }
@@ -84,6 +95,8 @@ export class InvestmentService {
 
         this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
             this.router.navigate(["/house/"+house['_id']]);
         })
     }
@@ -91,10 +104,12 @@ export class InvestmentService {
     addExpense(house: House, expense_entry: Expense){
         console.log("service sends post request to add an expense entry")
         // Adds new expense entry
-        house.incomeList.push(expense_entry);
+        house.expenseList.push(expense_entry);
 
         this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
             this.router.navigate(["/house/"+house['_id']]);
         })
     }
@@ -102,9 +117,11 @@ export class InvestmentService {
     removeExpense(house: House, expense_entry_id: string){
 
         house.expenseList = house.expenseList.filter( entry => entry.id != expense_entry_id);
-
+        console.log(house);
         this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
             this.router.navigate(["/house/"+house['_id']]);
         })
     }

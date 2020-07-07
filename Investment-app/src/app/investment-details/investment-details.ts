@@ -14,10 +14,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./investment-details.css'],
   templateUrl: './investment-details.html',
 })
-export class InvestmentDetailsComponent implements OnInit{
+export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
-    netValue: number;
+    netValue: number = 0;
     loaded = true;
     displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
     house: House;
@@ -34,24 +34,29 @@ export class InvestmentDetailsComponent implements OnInit{
     //get data from ID
     this.loaded = false;
     this.route.paramMap.subscribe((paramMap:ParamMap) =>{
-        if (paramMap.has("investmentId")) {
-            this.investmentId = paramMap.get("investmentId");
-            this.investmentService.getInvestment(this.investmentId)
-            .subscribe(investmentData => {
-              this.loaded = true;
-              this.house = investmentData.house;
-              this.transactions = [...this.house.incomeList, ...this.house.expenseList];
-              this.calculateNet();
-            })
-          }
-    })
+      if (paramMap.has("investmentId")) {
+          this.investmentId = paramMap.get("investmentId")
+          this.investmentService.getInvestment(this.investmentId);
+          this.investmentSub = this.investmentService.getOneInvestmentUpdateListener().subscribe((house: House) => {
+            this.loaded = true;
+            this.house = house;
+            this.transactions = [...this.house.incomeList, ...this.house.expenseList];
+            this.calculateNet();
+          })
+      }
+    });
+  }
+  
+  ngOnDestroy(){
+    this.investmentSub.unsubscribe();
   }
 
   calculateNet(){
-    this.netValue = this.transactions.map(a => a.value).reduce(function(a, b)
-    {
-      return a + b;
-    });
+    if (this.transactions.length>0) { 
+      this.transactions.forEach(transaction => {
+        this.netValue += transaction.value;
+      })
+    }
   }
 
   onSaveForm( form: NgForm){
@@ -59,20 +64,20 @@ export class InvestmentDetailsComponent implements OnInit{
         return;
     }
 
-    if (form.value.value >= 0 ){
+    if (Number(form.value.value) >= 0 ){
       // add income entry to this.house.incomeList
       const new_income_entry: Income = {
         id: Date.now().toString(),
-        value: form.value.value, 
+        value: Number(form.value.value), 
         description:form.value.description,
         date: new Date() };
-      //this.house.incomeList.push(new_income_entry);
-      this.investmentService.addIncome(this.house, new_income_entry);
-    }else{
-      // add expense entry to this.house.expenseList
+        //this.house.incomeList.push(new_income_entry);
+        this.investmentService.addIncome(this.house, new_income_entry);
+      }else{
+        // add expense entry to this.house.expenseList
       const new_expense_entry: Expense = {
         id: Date.now().toString(),
-        value: form.value.value, 
+        value: Number(form.value.value), 
         description:form.value.description,
         date: new Date() };
       //this.house.expenseList.push(new_expense_entry);
@@ -83,14 +88,14 @@ export class InvestmentDetailsComponent implements OnInit{
     form.resetForm();
 }
 
-onDeleteTableEntry(id:string, value:number){
-  if (value >= 0) {
-    this.investmentService.removeIncome(this.house, id);
-    console.log("Income: "+id+" deleted.");
-  }else{
-    this.investmentService.removeExpense(this.house, id);
-    console.log("Expense: "+id+" deleted.");
+  onDeleteTableEntry(id:string, value:number){
+    if (value >= 0) {
+      this.investmentService.removeIncome(this.house, id);
+      console.log("Income: "+id+" deleted.");
+    }else{
+      this.investmentService.removeExpense(this.house, id);
+      console.log("Expense: "+id+" deleted.");
+    }
   }
-}
 
 }
