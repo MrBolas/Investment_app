@@ -1,6 +1,9 @@
 export interface Expense {
     id: string;
     value: number;
-    description: string;
+    short_description: string;
+    long_description: string;
     date: Date;
+    booker?: string;
+    reservation_link?: string;
 }  

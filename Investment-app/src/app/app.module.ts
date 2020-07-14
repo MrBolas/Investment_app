@@ -5,12 +5,14 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { MatIconModule} from "@angular/material/icon";
 import { MatTreeModule, MatTree, MatTreeNode } from "@angular/material/tree";
 import { MatExpansionModule } from "@angular/material/expansion";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from "@angular/material/card";
 import { HttpClientModule } from "@angular/common/http";
 import { MatInputModule } from "@angular/material/input";
 import { MatTableModule } from "@angular/material/table";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatSelectModule } from "@angular/material/select";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -21,6 +23,8 @@ import { InvestmentCreateComponent } from './investment-create/investment-create
 import { SafePipe } from './safe.pipe';
 import { InvestmentDetailsComponent } from './investment-details/investment-details';
 import { MatButtonModule } from '@angular/material/button';
+import { LoginComponent } from './auth/login/login.component';
+import { SignupComponent } from './auth/signup/signup.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +33,8 @@ import { MatButtonModule } from '@angular/material/button';
     InvestmentListComponent,
     InvestmentCreateComponent,
     InvestmentDetailsComponent,
+    LoginComponent,
+    SignupComponent,
     SafePipe
   ],
   imports: [
@@ -41,12 +47,15 @@ import { MatButtonModule } from '@angular/material/button';
     MatTreeModule,
     MatExpansionModule,
     FormsModule,
+    ReactiveFormsModule,
     MatFormFieldModule,
     MatCardModule,
     HttpClientModule,
     MatInputModule,
     MatTableModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

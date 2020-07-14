@@ -1,13 +1,15 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { InvestmentService } from '../services/investment.service';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormControl } from '@angular/forms';
 
 import { House } from '../models/house.model';
 import { Transaction } from "../models/transaction.model";
 import { Income } from "../models/income.model";
 import { Expense } from "../models/expense.model";
 import { Subscription } from 'rxjs';
+
+import { BookerUtils } from "../helper/booker_utils";
 
 @Component({
   selector: 'app-investment-details',
@@ -17,13 +19,18 @@ import { Subscription } from 'rxjs';
 export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
+    value = ''; short_description = ''; long_description = ''; reservation_code = ''; reservationOptionSelected = '';
+    reservationOptionsControl = new FormControl('');
+    reservationsOptions = [
+      {name: 'No'},
+      {name: 'Booking'},
+      {name: 'Airbnb'},
+    ];
     netValue: number = 0;
     loaded = true;
     displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
     house: House;
     transactions: Transaction[]=[];
-    value = '';
-    description = '';
 
     constructor(
         public investmentService: InvestmentService,
@@ -51,6 +58,10 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     this.investmentSub.unsubscribe();
   }
 
+  onButtonClick(transaction){
+    window.open(transaction.reservation_link);
+  }
+
   calculateNet(){
     if (this.transactions.length>0) { 
       this.transactions.forEach(transaction => {
@@ -64,22 +75,46 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         return;
     }
 
+    
+    //Booker link validations
+    var bookerSelected = '';
+    var reservationLink = '';
+
+    //console.log(bookerSelected + ' ' + reservationLink);
+    if (BookerUtils.isBooker(this.reservationOptionSelected['name'])
+    && BookerUtils.isValidReservationCode(this.reservationOptionSelected['name'], form.value.reservation_code)) 
+    {
+      bookerSelected = this.reservationOptionSelected['name'];
+      reservationLink = BookerUtils.getReservationLink(this.reservationOptionSelected['name']) + form.value.reservation_code;  
+    }
+    
     if (Number(form.value.value) >= 0 ){
       // add income entry to this.house.incomeList
+
       const new_income_entry: Income = {
         id: Date.now().toString(),
         value: Number(form.value.value), 
-        description:form.value.description,
-        date: new Date() };
-        //this.house.incomeList.push(new_income_entry);
-        this.investmentService.addIncome(this.house, new_income_entry);
-      }else{
-        // add expense entry to this.house.expenseList
+        short_description:form.value.short_description,
+        long_description:form.value.long_description,
+        date: new Date(),
+        booker: bookerSelected,
+        reservation_link: reservationLink,
+      };
+      console.log(new_income_entry);
+      //this.house.incomeList.push(new_income_entry);
+      this.investmentService.addIncome(this.house, new_income_entry);
+    }else{
+      // add expense entry to this.house.expenseList
       const new_expense_entry: Expense = {
         id: Date.now().toString(),
         value: Number(form.value.value), 
-        description:form.value.description,
-        date: new Date() };
+        short_description:form.value.short_description,
+        long_description:form.value.long_description,
+        date: new Date(),
+        booker: bookerSelected,
+        reservation_link: reservationLink,
+      };
+      console.log(new_expense_entry);
       //this.house.expenseList.push(new_expense_entry);
       this.investmentService.addExpense(this.house, new_expense_entry);
     }
