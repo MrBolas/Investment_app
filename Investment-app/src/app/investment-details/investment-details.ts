@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { InvestmentService } from '../services/investment.service';
 import { NgForm, FormControl } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 import { House } from '../models/house.model';
 import { Transaction } from "../models/transaction.model";
@@ -19,7 +20,10 @@ import { BookerUtils } from "../helper/booker_utils";
 export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
+    pipe = new DatePipe('en-US');
     value = ''; short_description = ''; long_description = ''; reservation_code = ''; reservationOptionSelected = '';
+    roomsFilter = '';
+    date = '';
     reservationOptionsControl = new FormControl('');
     reservationsOptions = [
       {name: 'No'},
@@ -75,7 +79,6 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         return;
     }
 
-    
     //Booker link validations
     var bookerSelected = '';
     var reservationLink = '';
@@ -96,7 +99,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         value: Number(form.value.value), 
         short_description:form.value.short_description,
         long_description:form.value.long_description,
-        date: new Date(),
+        date: new Date(this.date),
+        date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
         reservation_link: reservationLink,
       };
@@ -110,7 +114,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         value: Number(form.value.value), 
         short_description:form.value.short_description,
         long_description:form.value.long_description,
-        date: new Date(),
+        date: new Date(this.date),
+        date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
         reservation_link: reservationLink,
       };

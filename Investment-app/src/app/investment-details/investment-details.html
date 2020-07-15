@@ -15,7 +15,15 @@
 
     <form (submit)="onSaveForm(transactionForm)" #transactionForm="ngForm">
       <div class="flex-container">
+
+          <mat-form-field appearance="fill">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [(ngModel)]="date" name="date" [matDatepicker]="picker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker ></mat-datepicker>
+          </mat-form-field>
         
+
         <div>
           <mat-label>Value  </mat-label>
           <mat-form-field class="input-field" appearance="outline">
@@ -88,7 +96,7 @@
     <!-- Date Column -->
     <ng-container matColumnDef="Date">
       <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-      <mat-cell *matCellDef="let transaction"> {{transaction.date}} </mat-cell>
+      <mat-cell *matCellDef="let transaction"> {{transaction.date_string}} </mat-cell>
     </ng-container>
   
     <!-- Value Column -->
