@@ -15,6 +15,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSelectModule } from "@angular/material/select";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
+import { NgxChartsModule } from "@swimlane/ngx-charts";
+import { MatGridListModule } from "@angular/material/grid-list";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -59,7 +61,9 @@ import { SignupComponent } from './auth/signup/signup.component';
     MatTooltipModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatGridListModule,
+    NgxChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

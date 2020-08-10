@@ -1,4 +1,6 @@
-export interface Income {
+import { Transaction } from "./transaction.model";
+
+export interface Income extends Transaction {
     id: string;
     value: number;
     short_description: string;

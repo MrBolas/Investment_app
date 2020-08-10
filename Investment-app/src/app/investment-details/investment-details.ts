@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, NgModule} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { InvestmentService } from '../services/investment.service';
 import { NgForm, FormControl } from '@angular/forms';
@@ -11,6 +11,8 @@ import { Expense } from "../models/expense.model";
 import { Subscription } from 'rxjs';
 
 import { BookerUtils } from "../helper/booker_utils";
+import { TimeSeriesUtils } from "../helper/time_series_utils";
+import { ChartOptions } from "./chart_options";
 
 @Component({
   selector: 'app-investment-details',
@@ -20,6 +22,15 @@ import { BookerUtils } from "../helper/booker_utils";
 export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
+   
+    // charts options
+    chart1_options = ChartOptions.getChart1Options();
+    chart2_options = ChartOptions.getChart2Options();
+    chart3_options = ChartOptions.getChart3Options();
+    chart1_results :any = [];
+    chart2_results :any = [];
+    chart3_results :any = [];
+   
     pipe = new DatePipe('en-US');
     value = ''; short_description = ''; long_description = ''; reservation_code = ''; reservationOptionSelected = '';
     roomsFilter = '';
@@ -32,7 +43,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     ];
     netValue: number = 0;
     loaded = true;
-    displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
+    displayedColumns: string[] = ['Action', 'Date', 'value', 'short_description','description'];
     house: House;
     transactions: Transaction[]=[];
 
@@ -53,6 +64,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
             this.house = house;
             this.transactions = [...this.house.incomeList, ...this.house.expenseList];
             this.calculateNet();
+            this.ParseChartData();
           })
       }
     });
@@ -72,6 +84,26 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         this.netValue += transaction.value;
       })
     }
+  }
+
+  ParseChartData(){
+    let presentdate = new Date();
+
+    /**Parse data for Chart 1 */
+    this.chart1_results = TimeSeriesUtils.formatTransactionArrayForMonthlyChart(this.transactions, presentdate);
+    this.chart1_results.forEach(chartSeriesData => {
+      TimeSeriesUtils.normalizeDataSeries(chartSeriesData);
+    });
+
+    /**Parse data for chart 2 */
+    this.chart2_results = TimeSeriesUtils.formatTransactionArrayForYearlyChart(this.transactions, presentdate);
+    this.chart2_results.forEach(chartSeriesData => {
+      TimeSeriesUtils.normalizeDataSeries(chartSeriesData);
+    });
+    
+    /**Parse data for chart 3 */
+    this.chart3_results = TimeSeriesUtils.formatTransactionArrayForTotalChart(this.transactions);
+
   }
 
   onSaveForm( form: NgForm){

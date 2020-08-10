@@ -1,119 +1,173 @@
-<!--Add form to add transaction-->
 <mat-card *ngIf="loaded">
-<h2>{{house.name}} : </h2><a *ngIf="netValue"> Net Value: {{netValue}} €</a>
-
-<!--Add title of the house and something like a Jumbotron with different graphics for analysis-->
-
+  <h2>{{house.name}} : </h2><a *ngIf="netValue"> Net Value: {{netValue}} €</a>
 </mat-card>
+
 <mat-accordion>
-  <mat-expansion-panel hideToggle>
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Add a new entry ...
-    </mat-panel-title>
-  </mat-expansion-panel-header>
-
-    <form (submit)="onSaveForm(transactionForm)" #transactionForm="ngForm">
-      <div class="flex-container">
-
-          <mat-form-field appearance="fill">
-            <mat-label>Choose a date</mat-label>
-            <input matInput [(ngModel)]="date" name="date" [matDatepicker]="picker">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker ></mat-datepicker>
-          </mat-form-field>
-        
-
-        <div>
-          <mat-label>Value  </mat-label>
-          <mat-form-field class="input-field" appearance="outline">
-            <input matInput name="value" placeholder="480 €" [(ngModel)] = "value" required>
-          </mat-form-field>
-        </div>
-        
-        <div>
-          <mat-label>Short description  </mat-label>
-          
-          <mat-form-field class="input-field" appearance="outline">
-            <input matInput name="short_description" placeholder="1 week booking" [(ngModel)] = "short_description" required>
-          </mat-form-field>
-        </div>
-        
-        <div>
-          <mat-label>Long description  </mat-label>
-          <mat-form-field class="input-field" appearance="outline">
-            <input matInput name="long_description" placeholder="Booking with reservation id: 2790359852" [(ngModel)] = "long_description" required>
-          </mat-form-field>
-        </div>
-        
-      </div>
-      <div class="flex-container">
-
-        <div>
-          <mat-form-field >
-            <mat-label>Reservation?</mat-label>
-            <mat-select [formControl]="reservationOptionsControl" [(value)]="reservationOptionSelected" >
-              <mat-option>--</mat-option>
-              <mat-option *ngFor="let reservationOption of reservationsOptions" [value]="reservationOption">
-                {{reservationOption.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <div>
-          <mat-label>Reservation code</mat-label>
-          <mat-form-field class="input-field" appearance="outline">
-            <input matInput name="reservation_code" placeholder="2790359852" [(ngModel)] = "reservation_code">
-          </mat-form-field>
-        </div>
-
-        <!--Add new form entries here-->
-        
-        <div class="add-button">
-          <br>  
-          <button mat-flat-button color="primary" type="submit">Add</button>
-        </div>
-      </div>
-    </form>
+  <mat-expansion-panel hideToggle expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+    Charts
+  </mat-panel-title>
+</mat-expansion-panel-header>
+    <div class="chart-row">
+      <div class="column left">
+        <ngx-charts-line-chart
+        [scheme]="chart1_options.colorScheme"
+        [showXAxisLabel]="chart1_options.showXAxisLabel"
+        [showYAxisLabel]="chart1_options.showYAxisLabel"
+        [xAxis]="chart1_options.xAxis"
+        [yAxis]="chart1_options.yAxis"
+        [xAxisLabel]="chart1_options.xAxisLabel"
+        [yAxisLabel]="chart1_options.yAxisLabel"
+        [results]="chart1_results"
+        >
+      </ngx-charts-line-chart>
+    </div>
+    
+    <div class="column middle">
+      <ngx-charts-line-chart
+      [scheme]="chart2_options.colorScheme"
+      [showXAxisLabel]="chart2_options.showXAxisLabel"
+      [showYAxisLabel]="chart2_options.showYAxisLabel"
+      [xAxis]="chart2_options.xAxis"
+      [yAxis]="chart2_options.yAxis"
+      [xAxisLabel]="chart2_options.xAxisLabel"
+      [yAxisLabel]="chart2_options.yAxisLabel"
+      [results]="chart2_results"
+      >
+    </ngx-charts-line-chart>
+    </div>
+    
+    <div class="column right">
+      <ngx-charts-pie-chart
+      [scheme]="chart3_options.colorScheme"
+      [doughnut]="chart3_options.doughnut"
+      [legend]="chart3_options.legend"
+      [results]="chart3_results"
+      >
+    </ngx-charts-pie-chart>
+    </div>  
+    
+  </div>
 
 </mat-expansion-panel>
 </mat-accordion>
 
+  <mat-accordion>
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+      Add a new entry ...
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  
+  <form (submit)="onSaveForm(transactionForm)" #transactionForm="ngForm">
+    <div class="flex-container">
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Choose a date</mat-label>
+        <input matInput [(ngModel)]="date" name="date" [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker ></mat-datepicker>
+      </mat-form-field>
+      
+      
+      <div>
+        <mat-label>Value  </mat-label>
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="value" placeholder="480 €" [(ngModel)] = "value" required>
+        </mat-form-field>
+      </div>
+      
+      <div>
+        <mat-label>Short description  </mat-label>
+        
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="short_description" placeholder="1 week booking" [(ngModel)] = "short_description" required>
+        </mat-form-field>
+      </div>
+      
+      <div>
+        <mat-label>Long description  </mat-label>
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="long_description" placeholder="Booking with reservation id: 2790359852" [(ngModel)] = "long_description" required>
+        </mat-form-field>
+      </div>
+      
+    </div>
+    <div class="flex-container">
+      
+      <div>
+        <mat-form-field >
+          <mat-label>Reservation?</mat-label>
+          <mat-select [formControl]="reservationOptionsControl" [(value)]="reservationOptionSelected" >
+            <mat-option>--</mat-option>
+            <mat-option *ngFor="let reservationOption of reservationsOptions" [value]="reservationOption">
+              {{reservationOption.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+        
+      <div>
+        <mat-label>Reservation code</mat-label>
+        <mat-form-field class="input-field" appearance="outline">
+          <input matInput name="reservation_code" placeholder="2790359852" [(ngModel)] = "reservation_code">
+        </mat-form-field>
+      </div>
+      
+      <!--Add new form entries here-->
+      
+      <div class="add-button">
+        <br>  
+        <button mat-flat-button color="primary" type="submit">Add</button>
+      </div>
+    </div>
+  </form>
+  
+</mat-expansion-panel>
+</mat-accordion>
+
 <mat-table [dataSource]="transactions" class="mat-elevation-z8">
-
-    <!-- Action Column -->
-    <ng-container matColumnDef="Action">
-      <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
-      <mat-cell *matCellDef="let transaction">
-        <button (click)="onDeleteTableEntry(transaction.id, transaction.value)" mat-mini-fab color="accent" aria-label="Example icon button with a menu icon">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
-
-
-    <!-- Date Column -->
-    <ng-container matColumnDef="Date">
-      <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-      <mat-cell *matCellDef="let transaction"> {{transaction.date_string}} </mat-cell>
-    </ng-container>
   
-    <!-- Value Column -->
-    <ng-container matColumnDef="value">
-      <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
-      <mat-cell *matCellDef="let transaction"> {{transaction.value}} € </mat-cell>
-    </ng-container>
+  <!-- Action Column -->
+  <ng-container matColumnDef="Action">
+    <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+    <mat-cell *matCellDef="let transaction">
+      <button (click)="onDeleteTableEntry(transaction.id, transaction.value)" mat-mini-fab color="accent" aria-label="Example icon button with a menu icon">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
   
-    <!-- Weight Column -->
-    <ng-container matColumnDef="description">
-      <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-      <mat-cell *matCellDef="let transaction"> 
-        <button #transaction (click)="onButtonClick(transaction)" mat-button matTooltip="{{transaction.long_description}}">
-          {{transaction.short_description}} 
-        </button>
-      </mat-cell>
-    </ng-container>
+  
+  <!-- Date Column -->
+  <ng-container matColumnDef="Date">
+    <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{transaction.date_string}} </mat-cell>
+  </ng-container>
+  
+  <!-- Value Column -->
+  <ng-container matColumnDef="value">
+    <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> {{transaction.value}} € </mat-cell>
+  </ng-container>
+  
+  <!-- Short descirption Column -->
+  <ng-container matColumnDef="short_description">
+    <mat-header-cell *matHeaderCellDef> Short description </mat-header-cell>
+    <mat-cell *matCellDef="let transaction"> 
+      <button #transaction (click)="onButtonClick(transaction)" mat-button matTooltip="{{transaction.long_description}}">
+        {{transaction.short_description}} 
+      </button>
+    </mat-cell>
+  </ng-container>
+    
+  <!-- Short descirption Column -->
+  <ng-container matColumnDef="description">
+    <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+    <mat-cell *matCellDef="let transaction">{{transaction.long_description}}</mat-cell>
+  </ng-container>
   
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

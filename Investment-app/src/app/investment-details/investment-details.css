@@ -9,6 +9,27 @@ table {
   flex-wrap: wrap;
 }
 
+.column{
+  height: 300px;
+  float: left;
+}
+
+.left{
+  width: 33%;
+}
+
+.middle{
+  width: 33%;
+}
+
+.right{
+  width: 33%;
+}
+
+.chart-row{
+  height: 50px;
+}
+
 .input-field{
   width: 300px;
   height: 20px;
@@ -21,4 +42,18 @@ table {
   display: block;
   background-size: 100% 100%;
   /* Other styles here */
+}
+
+.mat-column-Action {
+  flex: 0 0 60px;
+}
+
+.mat-column-Date {
+  flex: 0 0 300px;
+}
+.mat-column-value {
+  flex: 0 0 5%;
+}
+.mat-column-short_description {
+  flex: 0 0 20%;
 }
