@@ -4,6 +4,8 @@ import { House } from "../models/house.model";
 import { InvestmentService } from '../services/investment.service';
 import { Subscription } from 'rxjs';
 
+import {FileTransfer } from "../helper/file_transfer_utils";
+
 @Component({
   selector: 'app-investment-list',
   templateUrl: './investment-list.component.html',
@@ -27,6 +29,12 @@ export class InvestmentListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.investmentSub.unsubscribe();
+  }
+
+  onExportButton(house: House){
+    const content = JSON.stringify(house);
+    const dataURI = FileTransfer.generateURI(content,'json')
+    FileTransfer.downloadFile(dataURI, house.name+'_export');
   }
 
 }

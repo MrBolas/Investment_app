@@ -1,3 +1,8 @@
-.edit-button{
+.buttons{
     text-align:right;
+}
+
+.export-button{
+    color:honeydew;
+    background-color: green;
 }

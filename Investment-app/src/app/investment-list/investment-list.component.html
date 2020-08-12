@@ -8,8 +8,9 @@
       <br>
       Location: {{house.location}}
       <br>
-      <div class="edit-button">
+      <div class="buttons">
         <a mat-flat-button color="primary" [routerLink]="['/house',house.id]">Details</a>
+        <a mat-flat-button class="export-button" (click)="onExportButton(house)" >Export</a>
       </div>
     </div>
       
