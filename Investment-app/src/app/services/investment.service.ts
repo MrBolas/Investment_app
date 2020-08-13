@@ -77,6 +77,15 @@ export class InvestmentService {
         })
     }
 
+    deleteInvestment(target_house:House){
+        this.http.delete<{message: string, house:any}>('http://localhost:3000/api/house/'+target_house.id)
+        .subscribe(() => {
+            const updatedPosts = this.houses.filter(house => house.id !== target_house.id);
+            this.houses = updatedPosts;
+            this.housesUpdated.next([...this.houses]);
+        })
+    }
+
     addIncome(house: House, income_entry: Income){
         // Adds new income entry
         house.incomeList.push(income_entry);

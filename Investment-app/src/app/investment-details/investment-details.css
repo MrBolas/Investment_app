@@ -2,8 +2,16 @@ table {
   width: 100%;
 }
 
-.flex-container {
+.flex-transaction-container {
   display: flex;
+  justify-content: space-around;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.flex-reservation-container {
+  display: flex;
+  width: 90%;
   justify-content: space-around;
   align-content: center;
   flex-wrap: wrap;

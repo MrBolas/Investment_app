@@ -1,4 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 import { House } from "../models/house.model";
 import { InvestmentService } from '../services/investment.service';
@@ -17,7 +18,9 @@ export class InvestmentListComponent implements OnInit, OnDestroy {
   houses: House[] = [];
   private investmentSub: Subscription;
 
-  constructor(public investmentService: InvestmentService) {}
+  constructor(
+    public investmentService: InvestmentService,
+    private _snackBar: MatSnackBar) {}
 
   ngOnInit(){
     this.investmentService.getInvestments();
@@ -32,9 +35,24 @@ export class InvestmentListComponent implements OnInit, OnDestroy {
   }
 
   onExportButton(house: House){
-    const content = JSON.stringify(house);
-    const dataURI = FileTransfer.generateURI(content,'json')
-    FileTransfer.downloadFile(dataURI, house.name+'_export');
+    const content_json = JSON.stringify(house);
+    const dataURI_json = FileTransfer.generateURI(content_json,'json');
+    FileTransfer.downloadFile(dataURI_json, house.name+'_export');
+    this.displaySnackBar('House '+house.name+' exported.')  
   }
 
+  onDeleteButton(house:House){
+    // Add confirmation button
+    this.investmentService.deleteInvestment(house);
+    this.displaySnackBar('House '+house.name+' deleted.')  
+  }
+
+  displaySnackBar(message:string){
+    //Display SnackBar
+    const snackbar_message = message; 
+    this._snackBar.open(snackbar_message, '',{
+        duration: 2000,
+        horizontalPosition:'right'
+        });
+  }
 }

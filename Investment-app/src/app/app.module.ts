@@ -29,6 +29,8 @@ import { InvestmentDetailsComponent } from './investment-details/investment-deta
 import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -63,6 +65,8 @@ import { SignupComponent } from './auth/signup/signup.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatGridListModule,
+    MatDialogModule,
+    MatSnackBarModule,
     NgxChartsModule
   ],
   providers: [],

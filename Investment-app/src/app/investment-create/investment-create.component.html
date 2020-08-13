@@ -22,10 +22,14 @@
             <br>
             <mat-form-field appearance="outline">
                 <input matInput name="location" placeholder="Vilamoura" [(ngModel)] = "location" required>
-            </mat-form-field>
+            </mat-form-field> 
         </p>
 
         <button mat-raised-button color="primary" type="submit"
         >Save</button>
+        <button mat-raised-button class="import-button" type="button" (click)="fileInput.click()">
+            <span>Import</span>
+            <input #fileInput type="file" (change)="onFileInput($event.target.files)" style="display:none;" />
+          </button>
     </form>
 </mat-card>

@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { BookerUtils } from "../helper/booker_utils";
 import { TimeSeriesUtils } from "../helper/time_series_utils";
 import { ChartOptions } from "./chart_options";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-investment-details',
@@ -49,7 +50,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
 
     constructor(
         public investmentService: InvestmentService,
-        public route: ActivatedRoute
+        public route: ActivatedRoute,
+        public _snackBar:MatSnackBar,
     ){}
 
   ngOnInit(){
@@ -125,7 +127,6 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     
     if (Number(form.value.value) >= 0 ){
       // add income entry to this.house.incomeList
-
       const new_income_entry: Income = {
         id: Date.now().toString(),
         value: Number(form.value.value), 
@@ -136,9 +137,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         booker: bookerSelected,
         reservation_link: reservationLink,
       };
-      console.log(new_income_entry);
-      //this.house.incomeList.push(new_income_entry);
       this.investmentService.addIncome(this.house, new_income_entry);
+      this.displaySnackBar('Income '+new_income_entry.short_description+' deleted.')
     }else{
       // add expense entry to this.house.expenseList
       const new_expense_entry: Expense = {
@@ -151,23 +151,30 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         booker: bookerSelected,
         reservation_link: reservationLink,
       };
-      console.log(new_expense_entry);
-      //this.house.expenseList.push(new_expense_entry);
       this.investmentService.addExpense(this.house, new_expense_entry);
+      this.displaySnackBar('Expense '+new_expense_entry.short_description+' deleted.')
     }
     
     //update house
     form.resetForm();
 }
 
-  onDeleteTableEntry(id:string, value:number){
-    if (value >= 0) {
-      this.investmentService.removeIncome(this.house, id);
-      console.log("Income: "+id+" deleted.");
+  onDeleteTableEntry(transaction:Transaction){
+    if (transaction.value >= 0) {
+      this.investmentService.removeIncome(this.house, transaction.id);
+      this.displaySnackBar('Income '+transaction.short_description+' deleted.')
     }else{
-      this.investmentService.removeExpense(this.house, id);
-      console.log("Expense: "+id+" deleted.");
+      this.investmentService.removeExpense(this.house, transaction.id);
+      this.displaySnackBar('Expense '+transaction.short_description+' deleted.')
     }
   }
 
+  displaySnackBar(message:string){
+    //Display SnackBar
+    const snackbar_message = message; 
+    this._snackBar.open(snackbar_message, '',{
+        duration: 2000,
+        horizontalPosition:'right'
+        });
+  }
 }

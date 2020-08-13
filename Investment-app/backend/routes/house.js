@@ -24,6 +24,29 @@ router.get('/:id',(req,res,next) =>{
     });
 });
 
+router.delete('/:id',(req,res,next) =>{
+    House.findByIdAndDelete(req.params.id)
+    .then(house =>{
+        res.status(200).json({
+            message:'House deleted sucessfully!',
+            house: house
+        });
+    })
+    .catch(() => {
+        res.status(404).json({
+            message:'House not found.',
+        });
+    })
+
+    House.findById(req.params.id)
+    .then(house => {
+        res.status(200).json({
+            message: 'House fetched sucessfully!',
+            house: house
+        });
+    });
+});
+
 router.post('', (req, res, next) => {
     const house = new House({
         name: req.body.name,
