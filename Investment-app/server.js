@@ -1,6 +1,7 @@
 const app = require("./backend/app");
 const debug = require("debug")("node-angular");
 const http = require("http");
+const launchCron = require("./backend/cronTasks/cron_tasks")
 
 const normalizePort = val => {
   var port = parseInt(val, 10);
@@ -42,6 +43,8 @@ const onListening = () => {
   const bind = typeof port === "string" ? "pipe " + port : "port " + port;
   debug("Listening on " + bind);
 };
+
+launchCron() // Launch Cron tasks
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

@@ -17,7 +17,7 @@ const periodicity_map = [
     { name: "Monthly", enum: periodicity.monthly},
     { name: "Quarterly", enum: periodicity.quarterly},
     { name: "Semester", enum: periodicity.semester},
-    { name: "Semester", enum: periodicity.yearly}
+    { name: "Yearly", enum: periodicity.yearly}
 ];
 
 const enum periodicity {

@@ -10,7 +10,6 @@ import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { map } from "rxjs/operators";
 
-
 @Injectable({providedIn: 'root'})
 export class InvestmentService {
     private houses: House[] = [];                   //for the list component
