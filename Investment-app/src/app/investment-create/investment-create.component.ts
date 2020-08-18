@@ -6,6 +6,7 @@ import { InvestmentService } from '../services/investment.service';
 import { House } from "../models/house.model";
 import { Income } from "../models/income.model";
 import { Expense } from "../models/expense.model";
+import { PeriodicTransaction } from '../models/periodicTransaction.model';
 
 @Component({
     selector: 'app-investment-create',
@@ -35,12 +36,14 @@ import { Expense } from "../models/expense.model";
         if (this.mode === "create") {
             let incomeList: Income[];
             let expenseList: Expense[];
+            let periodicTransactionList: PeriodicTransaction[];
             const added_house = this.investmentService.addHouse(
                 form.value.name,
                 form.value.adress,
                 form.value.location,
                 incomeList,
-                expenseList
+                expenseList,
+                periodicTransactionList
             );
             this.displaySnackBar('House '+form.value.name+' created.')
         }
@@ -72,7 +75,8 @@ import { Expense } from "../models/expense.model";
                     new_house.adress,
                     new_house.location,
                     new_house.incomeList,
-                    new_house.expenseList)
+                    new_house.expenseList,
+                    new_house.periodicTransactionList)
             }        
         }
         this.displaySnackBar('House '+new_house.name+' imported.')

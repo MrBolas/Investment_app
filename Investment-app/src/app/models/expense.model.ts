@@ -9,4 +9,5 @@ export interface Expense extends Transaction {
     date_string: String;
     booker?: string;
     reservation_link?: string;
+    periodicity: boolean;
 }  

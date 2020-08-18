@@ -8,7 +8,8 @@ const houseSchema = mongoose.Schema({
     adress: { type: String, required: false},
     location: {type: String, required: true},
     incomeList: {type: Array, required: true},
-    expenseList: {type: Array, required: true}
+    expenseList: {type: Array, required: true},
+    periodicTransactionList: {type: Array, required: true}
 });
 
 module.exports = mongoose.model('House', houseSchema);

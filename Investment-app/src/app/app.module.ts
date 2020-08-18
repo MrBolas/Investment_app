@@ -17,6 +17,9 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { NgxChartsModule } from "@swimlane/ngx-charts";
 import { MatGridListModule } from "@angular/material/grid-list";
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,8 +32,6 @@ import { InvestmentDetailsComponent } from './investment-details/investment-deta
 import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatGridListModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatCheckboxModule,
     NgxChartsModule
   ],
   providers: [],

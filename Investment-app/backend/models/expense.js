@@ -5,7 +5,8 @@ const expenseSchema = mongoose.Schema({
     value: {type: Number,  required: true},
     short_description: {type: String, required: true},
     long_description: {type: String, required: false},
-    date: {type: Date, required: true}
+    date: {type: Date, required: true},
+    periodic: {type: Boolean, required: true}
 });
 
 module.exports = mongoose.model('Expense',expenseSchema);

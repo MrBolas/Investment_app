@@ -2,6 +2,7 @@ import {Component, OnInit, OnDestroy, NgModule} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { InvestmentService } from '../services/investment.service';
 import { NgForm, FormControl } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 
 import { House } from '../models/house.model';
@@ -13,7 +14,8 @@ import { Subscription } from 'rxjs';
 import { BookerUtils } from "../helper/booker_utils";
 import { TimeSeriesUtils } from "../helper/time_series_utils";
 import { ChartOptions } from "./chart_options";
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { PeriodicityUtils } from "../helper/periodicity_utils";
+import { PeriodicTransaction } from '../models/periodicTransaction.model';
 
 @Component({
   selector: 'app-investment-details',
@@ -31,12 +33,16 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     chart1_results :any = [];
     chart2_results :any = [];
     chart3_results :any = [];
+    cumulative_checkbox = true;
    
     pipe = new DatePipe('en-US');
-    value = ''; short_description = ''; long_description = ''; reservation_code = ''; reservationOptionSelected = '';
-    roomsFilter = '';
-    date = '';
+    value :string; short_description :string; long_description :string; 
+    reservation_code :string; reservationOptionSelected = '';
+    periodicityOptionSelected = '';
+    date :string; end_date:string;
     reservationOptionsControl = new FormControl('');
+    periodicityOptionsControl = new FormControl('');
+    periodicityOptions: Object;
     reservationsOptions = [
       {name: 'No'},
       {name: 'Booking'},
@@ -57,6 +63,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
   ngOnInit(){
     //get data from ID
     this.loaded = false;
+    this.periodicityOptions = PeriodicityUtils.getPeriodicityMap();
     this.route.paramMap.subscribe((paramMap:ParamMap) =>{
       if (paramMap.has("investmentId")) {
           this.investmentId = paramMap.get("investmentId")
@@ -92,13 +99,13 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     let presentdate = new Date();
 
     /**Parse data for Chart 1 */
-    this.chart1_results = TimeSeriesUtils.formatTransactionArrayForMonthlyChart(this.transactions, presentdate);
+    this.chart1_results = TimeSeriesUtils.formatTransactionArrayForMonthlyChart(this.transactions, presentdate, this.cumulative_checkbox);
     this.chart1_results.forEach(chartSeriesData => {
       TimeSeriesUtils.normalizeDataSeries(chartSeriesData);
     });
 
     /**Parse data for chart 2 */
-    this.chart2_results = TimeSeriesUtils.formatTransactionArrayForYearlyChart(this.transactions, presentdate);
+    this.chart2_results = TimeSeriesUtils.formatTransactionArrayForYearlyChart(this.transactions, presentdate, this.cumulative_checkbox);
     this.chart2_results.forEach(chartSeriesData => {
       TimeSeriesUtils.normalizeDataSeries(chartSeriesData);
     });
@@ -117,12 +124,18 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     var bookerSelected = '';
     var reservationLink = '';
 
-    //console.log(bookerSelected + ' ' + reservationLink);
+    //Periodicity
+    let periodic_transaction = false;
+
     if (BookerUtils.isBooker(this.reservationOptionSelected['name'])
     && BookerUtils.isValidReservationCode(this.reservationOptionSelected['name'], form.value.reservation_code)) 
     {
       bookerSelected = this.reservationOptionSelected['name'];
       reservationLink = BookerUtils.getReservationLink(this.reservationOptionSelected['name']) + form.value.reservation_code;  
+    }
+
+    if (this.periodicityOptionSelected['enum'] > 0) {
+      periodic_transaction = true;  
     }
     
     if (Number(form.value.value) >= 0 ){
@@ -136,9 +149,24 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
         reservation_link: reservationLink,
+        periodicity: periodic_transaction
       };
-      this.investmentService.addIncome(this.house, new_income_entry);
-      this.displaySnackBar('Income '+new_income_entry.short_description+' deleted.')
+      if (periodic_transaction) {
+        let child_ids:string[]=[new_income_entry.id];
+        const new_periodic_income: PeriodicTransaction = {
+          id: new_income_entry.id,
+          value: new_income_entry.value,
+          short_description: new_income_entry.short_description,
+          long_description: new_income_entry.long_description,
+          date: new_income_entry.date,
+          periodicity: this.periodicityOptionSelected['enum'],
+          child_id: child_ids
+        }
+        this.investmentService.addIncome(this.house, new_income_entry, new_periodic_income);
+      } else {
+        this.investmentService.addIncome(this.house, new_income_entry);
+      }
+      this.displaySnackBar('Income '+new_income_entry.short_description+' added.')
     }else{
       // add expense entry to this.house.expenseList
       const new_expense_entry: Expense = {
@@ -150,9 +178,24 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
         reservation_link: reservationLink,
+        periodicity: periodic_transaction
       };
-      this.investmentService.addExpense(this.house, new_expense_entry);
-      this.displaySnackBar('Expense '+new_expense_entry.short_description+' deleted.')
+      if (periodic_transaction) {
+        let child_ids:string[]=[new_expense_entry.id];
+        const new_periodic_expense: PeriodicTransaction = {
+          id: new_expense_entry.id,
+          value: new_expense_entry.value,
+          short_description: new_expense_entry.short_description,
+          long_description: new_expense_entry.long_description,
+          date: new_expense_entry.date,
+          periodicity: this.periodicityOptionSelected['enum'],
+          child_id: child_ids
+        }
+        this.investmentService.addExpense(this.house, new_expense_entry, new_periodic_expense);
+      } else {
+        this.investmentService.addExpense(this.house, new_expense_entry);
+      }
+      this.displaySnackBar('Expense '+new_expense_entry.short_description+' added.')
     }
     
     //update house
@@ -162,10 +205,12 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
   onDeleteTableEntry(transaction:Transaction){
     if (transaction.value >= 0) {
       this.investmentService.removeIncome(this.house, transaction.id);
-      this.displaySnackBar('Income '+transaction.short_description+' deleted.')
+      this.displaySnackBar('Income '+transaction.short_description+' deleted.');
+      this.netValue = this.netValue - transaction.value;
     }else{
       this.investmentService.removeExpense(this.house, transaction.id);
-      this.displaySnackBar('Expense '+transaction.short_description+' deleted.')
+      this.displaySnackBar('Expense '+transaction.short_description+' deleted.');
+      this.netValue = this.netValue + transaction.value;
     }
   }
 

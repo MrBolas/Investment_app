@@ -9,5 +9,6 @@ export interface Income extends Transaction {
     date_string: String;
     booker?: string;
     reservation_link?: string;
+    periodicity: boolean;
 }
   

@@ -53,7 +53,8 @@ router.post('', (req, res, next) => {
         adress: req.body.adress,
         location: req.body.location,
         incomeList: req.body.incomeList,
-        expenseList: req.body.expenseList
+        expenseList: req.body.expenseList,
+        periodicTransactionList: req.body.periodicTransactionList
     });
     console.log(house);
     house.save().then(createdInvestment => {
@@ -71,7 +72,8 @@ router.put('/:id', (req, res, next) => {
         adress: req.body.adress,
         location: req.body.location,
         incomeList: req.body.incomeList,
-        expenseList: req.body.expenseList
+        expenseList: req.body.expenseList,
+        periodicTransactionList: req.body.periodicTransactionList
     });
     console.log(req.params.id);
     House.updateOne({ _id: req.params.id} , house).then(udpated_investment => {

@@ -11,7 +11,7 @@ export class ChartOptions {
             yAxis: true,
             showYAxisLabel: true,
             showXAxisLabel: true,
-            xAxisLabel: 'Day of the Month',
+            xAxisLabel: 'Monthly',
             yAxisLabel: '€',
             timeline: true,
             colorScheme: {
@@ -30,7 +30,7 @@ export class ChartOptions {
             yAxis: true,
             showYAxisLabel: true,
             showXAxisLabel: true,
-            xAxisLabel: 'Month',
+            xAxisLabel: 'Yearly',
             yAxisLabel: '€',
             timeline: true,
             colorScheme: {
