@@ -10,6 +10,8 @@ import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { map } from "rxjs/operators";
 
+import { environment } from '../../environments/environment';
+
 @Injectable({providedIn: 'root'})
 export class InvestmentService {
     private houses: House[] = [];                   //for the list component
@@ -37,7 +39,7 @@ export class InvestmentService {
             expenseList: expenseList,
             periodicTransactionList: periodicTransactionList
         };
-        this.http.post<{message: string, houseId: string}>('http://localhost:3000/api/house', house)
+        this.http.post<{message: string, houseId: string}>(environment.apiUrl+'/api/house', house)
         .subscribe((responseData)=>{
             const id = responseData.houseId;
             house.id = id;
@@ -48,7 +50,7 @@ export class InvestmentService {
     }
 
     getInvestments(){
-        this.http.get<{message: string, houses: any}>('http://localhost:3000/api/house')
+        this.http.get<{message: string, houses: any}>(environment.apiUrl+'/api/house')
         .pipe(map(investmentData => {
             console.log(investmentData);
             return investmentData.houses.map(house => {
@@ -71,7 +73,7 @@ export class InvestmentService {
     }
 
     getInvestment(id: string){
-        this.http.get<{message: string, house:any}>('http://localhost:3000/api/house/'+id)
+        this.http.get<{message: string, house:any}>(environment.apiUrl+'/api/house/'+id)
         .subscribe((updatedReply) => {
             this.house = updatedReply.house;
             this.houseUpdated.next(this.house);
@@ -80,7 +82,7 @@ export class InvestmentService {
     }
 
     deleteInvestment(target_house:House){
-        this.http.delete<{message: string, house:any}>('http://localhost:3000/api/house/'+target_house.id)
+        this.http.delete<{message: string, house:any}>(environment.apiUrl+'/api/house/'+target_house.id)
         .subscribe(() => {
             const updatedPosts = this.houses.filter(house => house.id !== target_house.id);
             this.houses = updatedPosts;
@@ -97,7 +99,7 @@ export class InvestmentService {
             house.periodicTransactionList.push(periodic_income);
         }
         console.log(house);
-        this.http.put('http://localhost:3000/api/house/'+house["_id"], house)
+        this.http.put(environment.apiUrl+'/api/house/'+house["_id"], house)
         .subscribe((responseData)=>{
             this.house = house;
             this.houseUpdated.next(this.house);
@@ -121,7 +123,7 @@ export class InvestmentService {
             house.periodicTransactionList = house.periodicTransactionList.filter( entry => entry.id != periodic_income.id);
         }
 
-        this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
+        this.http.put(environment.apiUrl+'/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
             this.house = house;
             this.houseUpdated.next(this.house);
@@ -138,7 +140,7 @@ export class InvestmentService {
             house.periodicTransactionList.push(periodic_expense);
         }
 
-        this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
+        this.http.put(environment.apiUrl+'/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
             this.house = house;
             this.houseUpdated.next(this.house);
@@ -162,7 +164,7 @@ export class InvestmentService {
             house.periodicTransactionList = house.periodicTransactionList.filter( entry => entry.id != periodic_expense.id);
         }
 
-        this.http.put('http://localhost:3000/api/house/'+house['_id'], house)
+        this.http.put(environment.apiUrl+'/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
             this.house = house;
             this.houseUpdated.next(this.house);

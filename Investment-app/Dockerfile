@@ -4,7 +4,7 @@ FROM node:10
 WORKDIR /usr/src/Investment-app
 
 # Install app dependencies
-COPY Investment-app/package*.json ./
+COPY package*.json ./
 
 RUN npm install
 
