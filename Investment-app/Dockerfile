@@ -15,4 +15,4 @@ RUN npm run build_prod
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start:server" ]
+CMD [ "npm", "run", "start:server_prod" ]
