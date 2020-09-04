@@ -45,50 +45,71 @@ function launchCron(){
  */
 function creationTransactionManager(periodic_transaction) {
     let present_date = new Date();     
+    let date;
+    var new_transactions = [];
 
     switch (periodic_transaction.periodicity) {
         case periodicity.none:
             break;
         case periodicity.daily:
-            var new_transactions = [];
-            let date = new Date(periodic_transaction.latest_date);
+            date = new Date(periodic_transaction.latest_date);
             const difference_of_days = differenceOfDays(present_date, new Date(periodic_transaction.latest_date));
             for (let transaction_to_create = 0; transaction_to_create < difference_of_days; transaction_to_create++) {
-                date.setDate(date.getDate()+1);
+                date.setDate(date.getDate() + 1);
                 const new_transaction = createTransaction(periodic_transaction, date);
                 new_transactions.push(new_transaction);
             }
             return new_transactions;
             break;
         case periodicity.weekly:
-            console.log("Weekly periodicity");
-            if(differenceOfDays(present_date,transaction.date) > 6){
-                return true;
+            date = new Date(periodic_transaction.latest_date);
+            let number_of_weeks = Math.floor(differenceOfDays(present_date, new Date(periodic_transaction.latest_date)) / 7);
+            for (let transaction_to_create = 0; transaction_to_create < number_of_weeks; transaction_to_create++) {
+                date.setDate(date.getDate() + 7);
+                const new_transaction = createTransaction(periodic_transaction, date);
+                new_transactions.push(new_transaction);
             }
+            return new_transactions;
             break;
         case periodicity.monthly:
-            console.log("Monthly periodicity");
-            if(firstDayOfTheMonth()){
-                return true;
+            date = new Date(periodic_transaction.latest_date);
+            let number_of_months = differenceOfMonths(present_date, date);
+            for (let transaction_to_create = 0; transaction_to_create < number_of_months; transaction_to_create++) {
+                date.setMonth(date.getMonth() + 1);
+                const new_transaction = createTransaction(periodic_transaction, date);
+                new_transactions.push(new_transaction);
             }
+            return new_transactions;
             break;
         case periodicity.quarterly:
-            console.log("Quarterly periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 3 == 0 && firstDayOfTheMonth()) {
-                return true;
+            date = new Date(periodic_transaction.latest_date);
+            let number_of_quarters = Math.floor(differenceOfMonths(present_date, date)/3);
+            for (let transaction_to_create = 0; transaction_to_create < number_of_quarters; transaction_to_create++) {
+                date.setMonth(date.getMonth() + 3);
+                const new_transaction = createTransaction(periodic_transaction, date);
+                new_transactions.push(new_transaction);
             }
+            return new_transactions;
             break;
         case periodicity.semester:
-            console.log("Semester periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 6 == 0 && firstDayOfTheMonth()) {
-                return true;
+            date = new Date(periodic_transaction.latest_date);
+            let number_of_semesters = Math.floor(differenceOfMonths(present_date, date)/6);
+            for (let transaction_to_create = 0; transaction_to_create < number_of_semesters; transaction_to_create++) {
+                date.setMonth(date.getMonth() + 6);
+                const new_transaction = createTransaction(periodic_transaction, date);
+                new_transactions.push(new_transaction);
             }
+            return new_transactions;
             break;
         case periodicity.yearly:
-            console.log("Yearly periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 12 == 0 && firstDayOfTheMonth()) {
-                return true;
+            date = new Date(periodic_transaction.latest_date);
+            let number_of_years = Math.floor(differenceOfMonths(present_date, date)/12);
+            for (let transaction_to_create = 0; transaction_to_create < number_of_years; transaction_to_create++) {
+                date.setMonth(date.getMonth() + 12);
+                const new_transaction = createTransaction(periodic_transaction, date);
+                new_transactions.push(new_transaction);
             }
+            return new_transactions;
             break;
         default:
             break;
@@ -103,6 +124,7 @@ function creationTransactionManager(periodic_transaction) {
  */
 function appliesPeriodicity(house, transaction){
     let present_date = new Date();     
+    let transaction_date;
 
     switch (transaction.periodicity) {
         case periodicity.none:
@@ -110,38 +132,44 @@ function appliesPeriodicity(house, transaction){
             return true;
             break;
         case periodicity.daily:
-            const transaction_date = new Date(transaction.latest_date);
-            if(differenceOfDays(present_date, transaction_date) > 0){
+            console.log("Daily periodicity");
+            transaction_date = new Date(transaction.latest_date);
+            if(differenceOfDays(present_date, transaction_date) > 0 ){
                 return true;
             }
             break;
         case periodicity.weekly:
             console.log("Weekly periodicity");
-            if(differenceOfDays(present_date,transaction.date) > 6){
+            transaction_date = new Date(transaction.latest_date);
+            if(differenceOfDays(present_date,transaction_date) > 6 ){
                 return true;
             }
             break;
         case periodicity.monthly:
             console.log("Monthly periodicity");
-            if(firstDayOfTheMonth()){
+            transaction_date = new Date(transaction.latest_date);
+            if(differenceOfMonths(present_date, transaction_date) > 0 ){
                 return true;
             }
             break;
         case periodicity.quarterly:
             console.log("Quarterly periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 3 == 0 && firstDayOfTheMonth()) {
+            transaction_date = new Date(transaction.latest_date);
+            if (differenceOfMonths(present_date, transaction_date) > 2 ) {
                 return true;
             }
             break;
         case periodicity.semester:
             console.log("Semester periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 6 == 0 && firstDayOfTheMonth()) {
+            transaction_date = new Date(transaction.latest_date);
+            if (differenceOfMonths(present_date, transaction_date) > 5 ) {
                 return true;
             }
             break;
         case periodicity.yearly:
             console.log("Yearly periodicity");
-            if (differenceOfMonths(present_date, transaction.date) % 12 == 0 && firstDayOfTheMonth()) {
+            transaction_date = new Date(transaction.latest_date);
+            if (differenceOfMonths(present_date, transaction_date) > 11 ) {
                 return true;
             }
             break;
@@ -152,7 +180,7 @@ function appliesPeriodicity(house, transaction){
 }
 
 function createTransaction(periodic_transaction, new_date){
-    const new_id = (Date.now()+Math.round(Math.random()*1000)).toString();
+    const new_id = (Date.now()+Math.round(Math.random()*1000000)).toString();
     const new_transaction = {
         id: new_id,
         value: periodic_transaction.value,

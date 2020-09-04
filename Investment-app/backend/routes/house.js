@@ -56,12 +56,12 @@ router.post('', (req, res, next) => {
         expenseList: req.body.expenseList,
         periodicTransactionList: req.body.periodicTransactionList
     });
-    console.log(house);
     house.save().then(createdInvestment => {
         res.status(201).json({
             message: 'Investment added sucessfully',
             houseId: createdInvestment._id
         });
+        console.log('New house with id: '+ houseId);
     });
 });
 
@@ -75,7 +75,7 @@ router.put('/:id', (req, res, next) => {
         expenseList: req.body.expenseList,
         periodicTransactionList: req.body.periodicTransactionList
     });
-    console.log(req.params.id);
+    console.log('Investment with id: '+req.params.id+' was updated.');
     House.updateOne({ _id: req.params.id} , house).then(udpated_investment => {
         res.status(200).json({
             message: 'Investment updated',
