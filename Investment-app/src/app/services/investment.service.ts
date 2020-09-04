@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { map } from "rxjs/operators";
 
 import { environment } from '../../environments/environment';
+import { CdkFixedSizeVirtualScroll } from '@angular/cdk/scrolling';
 
 @Injectable({providedIn: 'root'})
 export class InvestmentService {
@@ -90,15 +91,14 @@ export class InvestmentService {
         })
     }
 
-    addIncome(house: House, income_entry: Income, periodic_income?: PeriodicTransaction){
-        // Adds new income entry
+    updateIncome(house :House, income_entry: Income){
+
+        // remove previous income entry
+        house.incomeList = house.incomeList.filter( entry => entry.id != income_entry.id);
+
+        // add new income entry
         house.incomeList.push(income_entry);
 
-        //If a template is available, add to house
-        if (periodic_income != undefined) {
-            house.periodicTransactionList.push(periodic_income);
-        }
-        console.log(house);
         this.http.put(environment.apiUrl+'/api/house/'+house["_id"], house)
         .subscribe((responseData)=>{
             this.house = house;
@@ -107,23 +107,77 @@ export class InvestmentService {
         })
     }
 
-    removeIncome(house: House, income_entry_id: string, periodic_income?: PeriodicTransaction){
-
-        //remove income listing
-        house.incomeList = house.incomeList.filter( entry => entry.id != income_entry_id);
+    addIncome(house: House, income_entry: Income, periodic_income?: PeriodicTransaction){
+        // Adds new income entry
+        house.incomeList.push(income_entry);
 
         //If a template is available, add to house
+        if (periodic_income != undefined) {
+            house.periodicTransactionList.push(periodic_income);
+        }
+        this.http.put(environment.apiUrl+'/api/house/'+house["_id"], house)
+        .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
+            this.router.navigate(["/house/"+house['_id']]);
+        })
+    }
+
+    removeIncome(house: House, income_entry: Income, periodic_income?: PeriodicTransaction){
+
+        //Removes child_id when income is removed
+        //Removes Periodic transaction if all childs are deleted
+        house.periodicTransactionList.forEach(periodicTransaction => {
+            periodicTransaction.child_id.map( id => {
+                if (id == income_entry.id){
+                    periodicTransaction.child_id = periodicTransaction.child_id.filter(id => id != income_entry.id);
+                } 
+                
+                if( periodicTransaction.child_id.length < 1){
+                    house.periodicTransactionList = house.periodicTransactionList.filter( entry => entry.id != periodicTransaction.id)
+                }
+            })
+        });
+
+        //Removes Periodic transaction if all childs are deleted
+        house.periodicTransactionList.forEach(periodicTransaction => {
+            periodicTransaction.child_id.map( id => {
+                if (id == income_entry.id && periodicTransaction.child_id.length == 1){
+                    house.periodicTransactionList.filter( entry => entry.id != periodicTransaction.id)
+                }
+            })
+        });
+
+        //remove income listing
+        house.incomeList = house.incomeList.filter( entry => entry.id != income_entry.id);
+
+        //If a template is available, remove from house
         if (periodic_income != undefined) {
             //remove all child transactions
             periodic_income.child_id.forEach(child_id => {
                 house.incomeList = house.incomeList.filter( entry => entry.id != child_id);
             })
-
             // remove periodic transaction template
             house.periodicTransactionList = house.periodicTransactionList.filter( entry => entry.id != periodic_income.id);
         }
 
         this.http.put(environment.apiUrl+'/api/house/'+house['_id'], house)
+        .subscribe((responseData)=>{
+            this.house = house;
+            this.houseUpdated.next(this.house);
+            this.router.navigate(["/house/"+house['_id']]);
+        })
+    }
+
+    updateExpense(house :House, expense_entry: Expense){
+
+        // remove previous expense entry
+        house.expenseList = house.expenseList.filter( entry => entry.id != expense_entry.id);
+
+        // add new expense entry
+        house.expenseList.push(expense_entry);
+
+        this.http.put(environment.apiUrl+'/api/house/'+house["_id"], house)
         .subscribe((responseData)=>{
             this.house = house;
             this.houseUpdated.next(this.house);
@@ -148,10 +202,24 @@ export class InvestmentService {
         })
     }
 
-    removeExpense(house: House, expense_entry_id: string, periodic_expense?: PeriodicTransaction){
+    removeExpense(house: House, expense_entry: Expense, periodic_expense?: PeriodicTransaction){
+
+        //Removes child_id when expense is removed
+        //Removes Periodic transaction if all childs are deleted
+        house.periodicTransactionList.forEach(periodicTransaction => {
+            periodicTransaction.child_id.map( id => {
+                if (id == expense_entry.id){
+                    periodicTransaction.child_id = periodicTransaction.child_id.filter(id => id != expense_entry.id);
+                } 
+                
+                if( periodicTransaction.child_id.length < 1){
+                    house.periodicTransactionList = house.periodicTransactionList.filter( entry => entry.id != periodicTransaction.id)
+                }
+            })
+        });
 
         //remove expense listing
-        house.expenseList = house.expenseList.filter( entry => entry.id != expense_entry_id);
+        house.expenseList = house.expenseList.filter( entry => entry.id != expense_entry.id);
 
         //If a template is available, add to house
         if (periodic_expense != undefined) {

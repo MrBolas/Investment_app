@@ -20,7 +20,7 @@ const periodicity_map = [
     { name: "Yearly", enum: periodicity.yearly}
 ];
 
-const enum periodicity {
+export const enum periodicity {
     none = 0,
     daily,
     weekly,

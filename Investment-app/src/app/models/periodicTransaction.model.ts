@@ -6,4 +6,5 @@ export interface PeriodicTransaction {
     date: Date;
     periodicity: number;
     child_id: string[];
+    latest_date: Date;
 }

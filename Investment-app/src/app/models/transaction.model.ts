@@ -7,5 +7,6 @@ export interface Transaction {
     date_string: String;
     booker?: string;
     reservation_link?: string;
+    periodicity: boolean;
 }
   

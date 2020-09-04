@@ -7,7 +7,8 @@ const periodicTransactionSchema = mongoose.Schema({
     long_description: {type: String, required: false},
     date: {type: Date, required:true},
     periodicity: {type: Number, required: true},
-    child_id: {type: Array, required: true}
+    child_id: {type: Array, required: true},
+    latest_date: {type: Date, required: true}
 });
 
 module.exports = mongoose.model('periodicTransaction',periodicTransactionSchema);

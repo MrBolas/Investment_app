@@ -1,5 +1,5 @@
 <mat-card *ngIf="loaded">
-  <h2>{{house.name}} : </h2><a *ngIf="netValue"> Net Value: {{netValue}} €</a>
+  <h2 *ngIf="house">{{house.name}} : </h2><a *ngIf="netValue"> Net Value: {{netValue}} €</a>
 </mat-card>
 
 <mat-accordion>

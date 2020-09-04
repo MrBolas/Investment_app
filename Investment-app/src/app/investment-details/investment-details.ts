@@ -74,6 +74,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
             this.transactions = [...this.house.incomeList, ...this.house.expenseList];
             this.calculateNet();
             this.ParseChartData();
+            this.preprocessing();
           })
       }
     });
@@ -92,6 +93,28 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       this.transactions.forEach(transaction => {
         this.netValue += transaction.value;
       })
+    }
+  }
+
+  /**
+   * Method that preprocesses data for the frontend.
+   */
+  preprocessing(){
+    //Update string dates for the Angular pipe format
+      this.updateDateStringFormatAngularPipe(this.house, this.house.incomeList);
+      this.updateDateStringFormatAngularPipe(this.house, this.house.expenseList);
+  }
+
+  updateDateStringFormatAngularPipe(house: House, transactionList: Transaction[]){
+    for (let transaction of transactionList) {
+      if (transaction.date_string == '') {
+        transaction.date_string = this.pipe.transform(transaction.date, 'fullDate');
+        if (transaction.value > 0) {
+          this.investmentService.updateIncome(house, transaction);
+        }else{
+          this.investmentService.updateExpense(house, transaction);
+        }
+      }
     }
   }
 
@@ -160,7 +183,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
           long_description: new_income_entry.long_description,
           date: new_income_entry.date,
           periodicity: this.periodicityOptionSelected['enum'],
-          child_id: child_ids
+          child_id: child_ids,
+          latest_date: new_income_entry.date
         }
         this.investmentService.addIncome(this.house, new_income_entry, new_periodic_income);
       } else {
@@ -189,7 +213,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
           long_description: new_expense_entry.long_description,
           date: new_expense_entry.date,
           periodicity: this.periodicityOptionSelected['enum'],
-          child_id: child_ids
+          child_id: child_ids,
+          latest_date: new_expense_entry.date
         }
         this.investmentService.addExpense(this.house, new_expense_entry, new_periodic_expense);
       } else {
@@ -204,11 +229,11 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
 
   onDeleteTableEntry(transaction:Transaction){
     if (transaction.value >= 0) {
-      this.investmentService.removeIncome(this.house, transaction.id);
+      this.investmentService.removeIncome(this.house, transaction);
       this.displaySnackBar('Income '+transaction.short_description+' deleted.');
       this.netValue = this.netValue - transaction.value;
     }else{
-      this.investmentService.removeExpense(this.house, transaction.id);
+      this.investmentService.removeExpense(this.house, transaction);
       this.displaySnackBar('Expense '+transaction.short_description+' deleted.');
       this.netValue = this.netValue + transaction.value;
     }

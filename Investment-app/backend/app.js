@@ -9,15 +9,6 @@ const houseRoutes = require('./routes/house');
 
 const app = express();
 
-/* mongoose.connect('mongodb://localhost:27017/InvestmentApp') // set this as variable to be injected in docker
-    .then(() => {
-        console.log('Connected to Database!');
-    })
-    .catch(() => {
-        console.log("Connection failed!");
-      });
-       */
-
 mongoose.connect(`mongodb://${process.env.DB_HOST}:27017/InvestmentApp`) // set this as variable to be injected in docker
     .then(() => {
         console.log('Connected to Database!');
