@@ -7,14 +7,14 @@ var house_id;
 
 
 it('Gets all the Houses endpoint', async done => {
-    const response = await request.get('')
+    const response = await request.get('http://localhost:3000/api/house/')
 
     expect(response.status).toBe(200)
     done()
 })
 
 it('Gets a specific House by id', async done => {
-    const response = await request.get('api/house/5f35723e956e651d64e279e5')
+    const response = await request.get('http://localhost:3000/api/house/5f52831b773f074db4f929e0')
   
     expect(response.status).toBe(200)
     done()

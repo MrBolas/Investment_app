@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const House = require("../models/house");
-const { transcode } = require("buffer");
+const logger = require("../helper/logger")
 
 const periodicity = {
     none:       0,
@@ -17,26 +17,35 @@ const periodicity = {
  * periodic transactions for new instances to be created. 
  */
 function launchCron(){
-    //cron.schedule("0 0 * * *", function() {
-        cron.schedule("* * * * *", function() {
-            //loads the periodic transactions
-            House.find().then(houses => {
-                console.log("Launched Cron Scheduler")
-                for (const house of houses)
+    let cron_schedule = {
+        name: 'Production schedule',
+        schedule: "0 0 * * *"
+    };
+    if (process.env.NODE_ENV !== 'production') {
+        cron_schedule = {
+            name: 'Developer schedule',
+            schedule: "* * * * *"
+        };
+    }
+    cron.schedule(cron_schedule.schedule, function() {
+        //loads the periodic transactions
+        House.find().then(houses => {
+            logger.info(`Started Cron task: Periodicity check on ${cron_schedule.name}.`);
+            for (const house of houses)
+            {
+                for (let periodic_transaction of house.periodicTransactionList)
                 {
-                    console.log('-> for: '+house.name);
-                    for (let periodic_transaction of house.periodicTransactionList)
-                    {
-                        if(appliesPeriodicity(house, periodic_transaction)){
-                            let new_transactions = creationTransactionManager(periodic_transaction);
-                            new_transactions.forEach(new_transaction => {
-                                updateDB(house, new_transaction,periodic_transaction);
-                            });
-                        }
+                    if(appliesPeriodicity(house, periodic_transaction)){
+                        logger.info(`Evaluating periodicity for: ${house.name}`);
+                        let new_transactions = creationTransactionManager(periodic_transaction);
+                        new_transactions.forEach(new_transaction => {
+                            updateDB(house, new_transaction,periodic_transaction);
+                        });
                     }
                 }
-            });
+            }
         });
+    });
 };
 
 /** @function creationTransactionManager 
@@ -128,46 +137,39 @@ function appliesPeriodicity(house, transaction){
 
     switch (transaction.periodicity) {
         case periodicity.none:
-            console.log("No periodicity");
             return true;
             break;
         case periodicity.daily:
-            console.log("Daily periodicity");
             transaction_date = new Date(transaction.latest_date);
             if(differenceOfDays(present_date, transaction_date) > 0 ){
                 return true;
             }
             break;
         case periodicity.weekly:
-            console.log("Weekly periodicity");
             transaction_date = new Date(transaction.latest_date);
             if(differenceOfDays(present_date,transaction_date) > 6 ){
                 return true;
             }
             break;
         case periodicity.monthly:
-            console.log("Monthly periodicity");
             transaction_date = new Date(transaction.latest_date);
             if(differenceOfMonths(present_date, transaction_date) > 0 ){
                 return true;
             }
             break;
         case periodicity.quarterly:
-            console.log("Quarterly periodicity");
             transaction_date = new Date(transaction.latest_date);
             if (differenceOfMonths(present_date, transaction_date) > 2 ) {
                 return true;
             }
             break;
         case periodicity.semester:
-            console.log("Semester periodicity");
             transaction_date = new Date(transaction.latest_date);
             if (differenceOfMonths(present_date, transaction_date) > 5 ) {
                 return true;
             }
             break;
         case periodicity.yearly:
-            console.log("Yearly periodicity");
             transaction_date = new Date(transaction.latest_date);
             if (differenceOfMonths(present_date, transaction_date) > 11 ) {
                 return true;
@@ -210,12 +212,12 @@ function updateDB(house, new_transaction, updated_periodic_transaction) {
     if (new_transaction.value > 0) {
         house.incomeList.push(new_transaction);
         House.updateOne({ _id: house.id} , house).then( updated => {
-            console.log('Added '+new_transaction.id+' to income List.')
+            logger.info(`Added new income transaction ${new_transaction.short_description}:${new_transaction.id} to database.`)
         });
     }else{
         house.expenseList.push(new_transaction);
         House.updateOne({ _id: house.id} , house).then(updated => {
-            console.log('Added '+new_transaction.id+' to expense List.')
+            logger.info(`Added new expense transaction ${new_transaction.short_description}:${new_transaction.id} to database.`)
         });
     }
 }

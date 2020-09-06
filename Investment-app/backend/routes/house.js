@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../helper/logger');
 
 const House = require("../models/house");
 
@@ -11,6 +12,7 @@ router.get('',(req,res,next) =>{
             message: 'House fetched sucessfully!',
             houses: documents
         });
+        logger.http(`Get request from IP: ${req.ip} for all.`)
     });
 });
 
@@ -21,6 +23,7 @@ router.get('/:id',(req,res,next) =>{
             message: 'House fetched sucessfully!',
             house: house
         });
+        logger.http(`Get request from IP: ${req.ip} for ${house.name}:${house.id}`)
     });
 });
 
@@ -31,13 +34,14 @@ router.delete('/:id',(req,res,next) =>{
             message:'House deleted sucessfully!',
             house: house
         });
+        logger.http(`Delete request from IP: ${req.ip} for ${house.name}:${house.id}`)
     })
     .catch(() => {
         res.status(404).json({
             message:'House not found.',
         });
     })
-
+    
     House.findById(req.params.id)
     .then(house => {
         res.status(200).json({
@@ -61,7 +65,7 @@ router.post('', (req, res, next) => {
             message: 'Investment added sucessfully',
             houseId: createdInvestment._id
         });
-        console.log('New house with id: '+ houseId);
+        logger.http(`Post request from IP: ${req.ip} for ${house.name}:${houseId}`)
     });
 });
 
@@ -75,7 +79,7 @@ router.put('/:id', (req, res, next) => {
         expenseList: req.body.expenseList,
         periodicTransactionList: req.body.periodicTransactionList
     });
-    console.log('Investment with id: '+req.params.id+' was updated.');
+    logger.http(`Put request from IP: ${req.ip} for ${house.name}:${house._id}`)
     House.updateOne({ _id: req.params.id} , house).then(udpated_investment => {
         res.status(200).json({
             message: 'Investment updated',
