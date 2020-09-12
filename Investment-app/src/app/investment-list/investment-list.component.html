@@ -1,4 +1,4 @@
-<mat-accordion multi="true" *ngIf="houses.length>0">
+<mat-accordion multi="true" *ngIf="houses.length>0 && userIsAuthenticated">
   <mat-expansion-panel *ngFor="let house of houses">
     <mat-expansion-panel-header>
       {{house.name}} : {{house.id}}

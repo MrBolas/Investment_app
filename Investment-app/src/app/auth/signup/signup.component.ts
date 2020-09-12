@@ -12,7 +12,6 @@ export class SignupComponent{
     isLoading = false;
 
     constructor(public authService: AuthService) {
-
     }
     
     onSignup(form: NgForm){

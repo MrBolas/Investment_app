@@ -1,12 +1,15 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Subscription } from 'rxjs';
 
 import { InvestmentService } from '../services/investment.service';
 import { House } from "../models/house.model";
 import { Income } from "../models/income.model";
 import { Expense } from "../models/expense.model";
 import { PeriodicTransaction } from '../models/periodicTransaction.model';
+import { AuthService } from "../auth/auth.service";
 
 @Component({
     selector: 'app-investment-create',
@@ -15,42 +18,63 @@ import { PeriodicTransaction } from '../models/periodicTransaction.model';
   })
 
   export class InvestmentCreateComponent implements OnInit { 
-    private mode = 'create';
     name = '';
     adress = '';
     location = '';
+    userIsAuthenticated = false;
+    private authStatusSub: Subscription;
  
     constructor(
         public investmentService: InvestmentService,
-        private _snackBar: MatSnackBar
+        private router: Router,
+        private _snackBar: MatSnackBar,
+        public authService: AuthService
     ){ }
 
     ngOnInit(){
-        this.mode = 'create';
+        this.userIsAuthenticated = this.authService.getIsAuth();
+        this.authStatusSub = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {
+            this.userIsAuthenticated = isAuthenticated;
+            console.log(isAuthenticated)
+        });
+        
+        if (!this.userIsAuthenticated)
+        {
+          this.router.navigate(['/login']);
+        }
     }
 
     onSaveForm( form: NgForm){
+        if (!this.userIsAuthenticated) {
+            this.displaySnackBar('User is not authenticated')
+            throw new Error("User not Authenticated.");
+        }
+
         if (form.invalid) {
             return;
         }
-        if (this.mode === "create") {
-            let incomeList: Income[];
-            let expenseList: Expense[];
-            let periodicTransactionList: PeriodicTransaction[];
-            const added_house = this.investmentService.addHouse(
-                form.value.name,
-                form.value.adress,
-                form.value.location,
-                incomeList,
-                expenseList,
-                periodicTransactionList
-            );
-            this.displaySnackBar('House '+form.value.name+' created.')
-        }
+
+        let incomeList: Income[];
+        let expenseList: Expense[];
+        let periodicTransactionList: PeriodicTransaction[];
+        const added_house = this.investmentService.addHouse(
+            form.value.name,
+            form.value.adress,
+            form.value.location,
+            incomeList,
+            expenseList,
+            periodicTransactionList
+        );
+        this.displaySnackBar('House '+form.value.name+' created.')
         form.resetForm();
     }
 
     onFileInput(files: FileList){
+        if (!this.userIsAuthenticated) {
+            this.displaySnackBar('User is not authenticated')
+            throw new Error("User not Authenticated.");
+        }
+
         if (files.length<1) {
             throw new Error("No file was selected.");
         }

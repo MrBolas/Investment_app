@@ -7,6 +7,7 @@ const logger = require('./helper/logger');
 
 //Route import
 const houseRoutes = require('./routes/house');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
@@ -22,7 +23,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));      
 app.use(cors());
 
-app.use("/api/house", houseRoutes); 
+app.use("/api/house",   houseRoutes); 
+app.use("/api/user",    userRoutes); 
 
 app.use(express.static('dist/Investment-app'));
 

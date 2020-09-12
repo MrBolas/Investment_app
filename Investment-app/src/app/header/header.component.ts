@@ -1,4 +1,9 @@
 import { Component } from "@angular/core";
+import { Router } from "@angular/router";
+
+import { Subscription } from "rxjs";
+
+import { AuthService } from "../auth/auth.service";
 
 @Component({
     selector: 'app-header',
@@ -7,7 +12,32 @@ import { Component } from "@angular/core";
 })
 
 export class HeaderComponent  {
-    constructor() {
-        
+    private authSub : Subscription;
+
+    userIsAuthenticated = false;
+    displayed_username:string = 'Guest';
+
+    constructor( private authService :AuthService, public router: Router ) {}
+
+    ngOnInit(){
+        this.userIsAuthenticated = this.authService.getIsAuth();
+        this.authSub = this.authService.getAuthStatusListener()
+        .subscribe(isAuthenticated => {
+          this.userIsAuthenticated = isAuthenticated;
+          if (this.userIsAuthenticated) {
+              this.displayed_username = this.authService.getUserEmail();
+          }else{
+              this.displayed_username = 'Guest';
+          }
+        })
+    }
+
+    ngOnDestroy(){
+        this.authSub.unsubscribe();
+    }
+
+    logout(){
+        this.authService.logout();
+        this.router.navigate(['/login']);
     }
 }

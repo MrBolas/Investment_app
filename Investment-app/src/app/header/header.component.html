@@ -6,6 +6,13 @@
     
     <span class="fill-remaining-space"></span>
 
+    <button mat-button [matMenuTriggerFor]="menu">{{displayed_username}}</button>
+    <mat-menu #menu="matMenu">
+        <span mat-menu-item *ngIf="!userIsAuthenticated" [routerLink]="['/signup']">Signup</span>
+        <span mat-menu-item *ngIf="!userIsAuthenticated" [routerLink]="['/login']">Login</span>
+        <span mat-menu-item *ngIf="userIsAuthenticated" (click)="logout()">Logout</span>
+    </mat-menu>
+
     <button mat-icon-button color="accent" routerLink="/create" aria-label="create_home_button">
         <mat-icon>home</mat-icon>
     </button>
