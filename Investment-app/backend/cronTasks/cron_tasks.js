@@ -24,7 +24,7 @@ function launchCron(){
     if (process.env.NODE_ENV !== 'production') {
         cron_schedule = {
             name: 'Developer schedule',
-            schedule: "* * * * *"
+            schedule: "0 * * * *"
         };
     }
     cron.schedule(cron_schedule.schedule, function() {

@@ -16,9 +16,6 @@ export class TimeSeriesUtils {
   static formatTransactionArrayForMonthlyChart(transactions: Transaction[], date:Date, cumulative:boolean) {
     let pipe = new DatePipe('en-US');
     let daysInMonth :number = new Date(date.getFullYear(), date.getMonth(),0).getDate();
-    console.log(`Days in month ${daysInMonth}
-    Month: ${date.getMonth()}`)
-
     let incomeChartSeries = []; /** Income Array */
     let expenseChartSeries = []; /** Expense Array */
 
@@ -137,7 +134,7 @@ export class TimeSeriesUtils {
               if (expenseChartSeries.length == month) {
                 expenseChartSeries[month-1].value += transaction.value; 
               }else{
-                expenseChartSeries.push({name: pipe.transform(transaction.date, 'M'), value: expenseChartSeries[incomeChartSeries.length-1]['value']+transaction.value})
+                expenseChartSeries.push({name: pipe.transform(transaction.date, 'M'), value: expenseChartSeries[expenseChartSeries.length-1]['value']+transaction.value})
               }
             }else{
               //if there is more than one transaction in said month

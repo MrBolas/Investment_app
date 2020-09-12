@@ -1,6 +1,7 @@
 import {Component, OnInit, OnDestroy, NgModule} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { InvestmentService } from '../services/investment.service';
+import { AuthService } from "../auth/auth.service";
 import { NgForm, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
@@ -25,6 +26,7 @@ import { PeriodicTransaction } from '../models/periodicTransaction.model';
 export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
+    private authSub : Subscription;
    
     // charts options
     chart1_options = ChartOptions.getChart1Options();
@@ -54,8 +56,13 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     house: House;
     transactions: Transaction[]=[];
 
+    //Authentication
+    userIsAuthenticated = false;
+
     constructor(
         public investmentService: InvestmentService,
+        private authService :AuthService,
+        private router: Router,
         public route: ActivatedRoute,
         public _snackBar:MatSnackBar,
     ){}
@@ -64,24 +71,38 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     //get data from ID
     this.loaded = false;
     this.periodicityOptions = PeriodicityUtils.getPeriodicityMap();
+
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authSub = this.authService.getAuthStatusListener()
+    .subscribe(isAuthenticated => {
+      this.userIsAuthenticated = isAuthenticated;
+    })
+
+    if (!this.userIsAuthenticated)
+    {
+      this.router.navigate(['/login']);
+    }
+
     this.route.paramMap.subscribe((paramMap:ParamMap) =>{
       if (paramMap.has("investmentId")) {
-          this.investmentId = paramMap.get("investmentId")
-          this.investmentService.getInvestment(this.investmentId);
-          this.investmentSub = this.investmentService.getOneInvestmentUpdateListener().subscribe((house: House) => {
-            this.loaded = true;
-            this.house = house;
-            this.transactions = [...this.house.incomeList, ...this.house.expenseList];
-            this.calculateNet();
-            this.ParseChartData();
-            this.preprocessing();
-          })
+        this.investmentId = paramMap.get("investmentId")
+        this.investmentService.getInvestment(this.investmentId);
+        this.investmentSub = this.investmentService.getOneInvestmentUpdateListener()
+        .subscribe(house => {
+          this.loaded = true;
+          this.house = house;
+          this.transactions = [...this.house.incomeList, ...this.house.expenseList];
+          this.calculateNet();
+          this.ParseChartData();
+          this.preprocessing();
+        })
       }
     });
   }
   
   ngOnDestroy(){
     this.investmentSub.unsubscribe();
+    this.authSub.unsubscribe();
   }
 
   onButtonClick(transaction){
@@ -142,6 +163,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     if (form.invalid) {
         return;
     }
+    console.log('house on saveform '+this.house)
 
     //Booker link validations
     var bookerSelected = '';

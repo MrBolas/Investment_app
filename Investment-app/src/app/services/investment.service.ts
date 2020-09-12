@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from "@angular/router";
 import { Title } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
-import { map } from "rxjs/operators";
+import { map, audit } from "rxjs/operators";
 
 import { environment } from '../../environments/environment';
 import { CdkFixedSizeVirtualScroll } from '@angular/cdk/scrolling';
@@ -53,9 +53,7 @@ export class InvestmentService {
     getInvestments(){
         this.http.get<{message: string, houses: any}>(environment.apiUrl+'/api/house')
         .pipe(map(investmentData => {
-            console.log(investmentData);
             return investmentData.houses.map(house => {
-                console.log(house);
                 return {
                     id: house._id,
                     name: house.name,
@@ -74,10 +72,9 @@ export class InvestmentService {
     }
 
     getInvestment(id: string){
-        this.http.get<{message: string, house:any}>(environment.apiUrl+'/api/house/'+id)
-        .subscribe((updatedReply) => {
-            this.house = updatedReply.house;
-            this.houseUpdated.next(this.house);
+        this.http.get<{message: string, house: House}>(environment.apiUrl+'/api/house/'+id)
+        .subscribe(response => {
+            this.houseUpdated.next(response.house);
             this.router.navigate(["/house/"+id]);
         })
     }
@@ -85,8 +82,8 @@ export class InvestmentService {
     deleteInvestment(target_house:House){
         this.http.delete<{message: string, house:any}>(environment.apiUrl+'/api/house/'+target_house.id)
         .subscribe(() => {
-            const updatedPosts = this.houses.filter(house => house.id !== target_house.id);
-            this.houses = updatedPosts;
+            const updatedInvestments = this.houses.filter(house => house.id !== target_house.id);
+            this.houses = updatedInvestments;
             this.housesUpdated.next([...this.houses]);
         })
     }
@@ -109,6 +106,7 @@ export class InvestmentService {
 
     addIncome(house: House, income_entry: Income, periodic_income?: PeriodicTransaction){
         // Adds new income entry
+        console.log(house)
         house.incomeList.push(income_entry);
 
         //If a template is available, add to house

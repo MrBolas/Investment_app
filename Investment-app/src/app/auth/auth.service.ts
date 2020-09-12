@@ -4,12 +4,15 @@ import { AuthData } from "./auth-data.model";
 import { Subject } from "rxjs";
 import { Router } from '@angular/router';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({providedIn: "root"})
 
 
 export class AuthService {
     private isAuthenticated = false;
     private token: string;
+    private user_email: string;
     private authStatusListener = new Subject<boolean>();
 
     constructor(private http: HttpClient, private router: Router) { }
@@ -26,23 +29,29 @@ export class AuthService {
         return this.authStatusListener.asObservable();
     }
 
+    getUserEmail(){
+        return this.user_email;
+    }
+
     createUser(email: string, password: string){
         const authData: AuthData = {email: email, password: password};
-        this.http.post("http://localhost:3000/api/user/signup", authData)
+        this.http.post(environment.apiUrl+"/api/user/signup", authData)
         .subscribe(response => {
-            console.log(response);
+            this.token = response['user'].token;
         })
     }
 
     login(email: string, password: string){
         const authData: AuthData = {email: email, password: password};
-        this.http.post<{token: string}>("http://localhost:3000/api/user/login", authData)
+        this.user_email = authData.email;
+        this.http.post<{token: string}>(environment.apiUrl+"/api/user/login", authData)
         .subscribe(response => {
             this.token = response.token;
+            console.log(this.token)
             if (this.token) {
                 this.isAuthenticated = true;
                 this.authStatusListener.next(true);
-                this.router.navigate(['/']);
+                this.router.navigate(['/list']);
             }
         })
     }
