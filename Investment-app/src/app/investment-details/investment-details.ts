@@ -38,7 +38,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     cumulative_checkbox = true;
    
     pipe = new DatePipe('en-US');
-    value :string; short_description :string; long_description :string; 
+    value :string; description :string; additional_information :string; 
     reservation_code :string; reservationOptionSelected = '';
     periodicityOptionSelected = '';
     date :string; end_date:string;
@@ -52,7 +52,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     ];
     netValue: number = 0;
     loaded = true;
-    displayedColumns: string[] = ['Action', 'Date', 'value', 'short_description','description'];
+    displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
     house: House;
     transactions: Transaction[]=[];
 
@@ -188,8 +188,9 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       const new_income_entry: Income = {
         id: Date.now().toString(),
         value: Number(form.value.value), 
-        short_description:form.value.short_description,
-        long_description:form.value.long_description,
+        description:form.value.description,
+        additional_information:form.value.additional_information,
+        completed: true,
         date: new Date(this.date),
         date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
@@ -201,8 +202,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         const new_periodic_income: PeriodicTransaction = {
           id: new_income_entry.id,
           value: new_income_entry.value,
-          short_description: new_income_entry.short_description,
-          long_description: new_income_entry.long_description,
+          description: new_income_entry.description,
+          additional_information: new_income_entry.additional_information,
           date: new_income_entry.date,
           periodicity: this.periodicityOptionSelected['enum'],
           child_id: child_ids,
@@ -212,14 +213,15 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       } else {
         this.investmentService.addIncome(this.house, new_income_entry);
       }
-      this.displaySnackBar('Income '+new_income_entry.short_description+' added.')
+      this.displaySnackBar('Income '+new_income_entry.description+' added.')
     }else{
       // add expense entry to this.house.expenseList
       const new_expense_entry: Expense = {
         id: Date.now().toString(),
         value: Number(form.value.value), 
-        short_description:form.value.short_description,
-        long_description:form.value.long_description,
+        description:form.value.description,
+        additional_information:form.value.additional_information,
+        completed: true,
         date: new Date(this.date),
         date_string: this.pipe.transform(this.date, 'fullDate'),
         booker: bookerSelected,
@@ -231,8 +233,8 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         const new_periodic_expense: PeriodicTransaction = {
           id: new_expense_entry.id,
           value: new_expense_entry.value,
-          short_description: new_expense_entry.short_description,
-          long_description: new_expense_entry.long_description,
+          description: new_expense_entry.description,
+          additional_information: new_expense_entry.additional_information,
           date: new_expense_entry.date,
           periodicity: this.periodicityOptionSelected['enum'],
           child_id: child_ids,
@@ -242,7 +244,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       } else {
         this.investmentService.addExpense(this.house, new_expense_entry);
       }
-      this.displaySnackBar('Expense '+new_expense_entry.short_description+' added.')
+      this.displaySnackBar('Expense '+new_expense_entry.description+' added.')
     }
     
     //update house
@@ -252,12 +254,24 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
   onDeleteTableEntry(transaction:Transaction){
     if (transaction.value >= 0) {
       this.investmentService.removeIncome(this.house, transaction);
-      this.displaySnackBar('Income '+transaction.short_description+' deleted.');
+      this.displaySnackBar('Income '+transaction.description+' deleted.');
       this.netValue = this.netValue - transaction.value;
     }else{
       this.investmentService.removeExpense(this.house, transaction);
-      this.displaySnackBar('Expense '+transaction.short_description+' deleted.');
+      this.displaySnackBar('Expense '+transaction.description+' deleted.');
       this.netValue = this.netValue + transaction.value;
+    }
+  }
+
+  toggleTransactionCompletion(transaction: Transaction){
+    //toggle transaction completion
+    transaction.completed = !transaction.completed;
+
+    //Update transaction to DB
+    if (transaction.value > 0) {
+      this.investmentService.updateIncome(this.house, transaction);
+    }else{
+      this.investmentService.updateExpense(this.house, transaction);
     }
   }
 

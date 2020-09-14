@@ -79,16 +79,16 @@
       </div>
       
       <div>
-        <mat-label>Short description  </mat-label>
+        <mat-label>Description  </mat-label>
         <mat-form-field class="input-field" appearance="outline">
-        <input matInput name="short_description" placeholder="1 week booking" [(ngModel)] = "short_description" required>
+        <input matInput name="description" placeholder="1 week booking" [(ngModel)] = "description" required>
         </mat-form-field>
       </div>
       
       <div>
-        <mat-label>Long description  </mat-label>
+        <mat-label>Additional information  </mat-label>
         <mat-form-field class="input-field" appearance="outline">
-        <input matInput name="long_description" placeholder="Booking with reservation id: 2790359852" [(ngModel)] = "long_description" required>
+        <input matInput name="additional_information" placeholder="Booking with reservation id: 2790359852" [(ngModel)] = "additional_information" required>
         </mat-form-field>
       </div>
     </div>
@@ -172,10 +172,16 @@
   
   <!-- Action Column -->
   <ng-container matColumnDef="Action">
-    <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef> Delete / Complete  </mat-header-cell>
     <mat-cell *matCellDef="let transaction">
-      <button (click)="onDeleteTableEntry(transaction)" mat-mini-fab color="accent" aria-label="Example icon button with a menu icon">
+      <button (click)="onDeleteTableEntry(transaction)" mat-mini-fab class="deleted-transaction-button" aria-label="Example icon button with a menu icon">
         <mat-icon>delete</mat-icon>
+      </button>
+      <button (click)="toggleTransactionCompletion(transaction)" *ngIf="transaction.completed" mat-mini-fab class="completed-button-success">
+        <mat-icon>check</mat-icon>
+      </button>
+      <button (click)="toggleTransactionCompletion(transaction)" *ngIf="!transaction.completed" mat-mini-fab class="completed-button-failure">
+        <mat-icon>check</mat-icon>
       </button>
     </mat-cell>
   </ng-container>
@@ -194,21 +200,15 @@
   </ng-container>
   
   <!-- Short descirption Column -->
-  <ng-container matColumnDef="short_description">
-    <mat-header-cell *matHeaderCellDef> Short description </mat-header-cell>
+  <ng-container matColumnDef="description">
+    <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
     <mat-cell *matCellDef="let transaction"> 
-      <button #transaction (click)="onButtonClick(transaction)" mat-button matTooltip="{{transaction.long_description}}">
-        {{transaction.short_description}} 
+      <button #transaction (click)="onButtonClick(transaction)" mat-button matTooltip="{{transaction.additional_information}}">
+        {{transaction.description}} 
       </button>
     </mat-cell>
   </ng-container>
     
-  <!-- Short descirption Column -->
-  <ng-container matColumnDef="description">
-    <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-    <mat-cell *matCellDef="let transaction">{{transaction.long_description}}</mat-cell>
-  </ng-container>
-  
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>

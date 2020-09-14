@@ -23,7 +23,8 @@ export class TimeSeriesUtils {
 
       /**Verifies if there is any transaction on the date */
       for (const transaction of transactions) {
-        if(transaction.value>0){
+        //Applies to the income 
+        if(transaction.value>0 && transaction.completed){
           if (pipe.transform(transaction.date, 'dd') == this.getStringFromDigit(day) &&
           pipe.transform(transaction.date, 'MM') == this.getStringFromDigit(date.getMonth()+1)) {
             if (cumulative && incomeChartSeries.length > 0) {
@@ -43,7 +44,8 @@ export class TimeSeriesUtils {
             }
           }
         }
-        else{
+        //Applies to the expenses 
+        else if( transaction.completed ){
           if (pipe.transform(transaction.date, 'dd') == this.getStringFromDigit(day) &&
           pipe.transform(transaction.date, 'MM') == this.getStringFromDigit(date.getMonth()+1)) {
             if (cumulative && expenseChartSeries.length > 0) {
@@ -103,7 +105,8 @@ export class TimeSeriesUtils {
     for (let month:number = 1; month < monthsInYear; month++) {
       /**Verifies if there is any transaction on the date */
       for (const transaction of transactions) {
-        if(transaction.value>0)
+        //Applies to the income
+        if(transaction.value>0 && transaction.completed)
         {
           if (pipe.transform(transaction.date, 'MM') == this.getStringFromDigit(month) &&
           pipe.transform(transaction.date, 'yyyy') == date.getFullYear().toString()) {
@@ -125,7 +128,8 @@ export class TimeSeriesUtils {
             }
           }
         }
-        else{
+        //Applies to the expenses
+        else if (transaction.completed){
           if (pipe.transform(transaction.date, 'MM') == this.getStringFromDigit(month) &&
           pipe.transform(transaction.date, 'yyyy') == date.getFullYear().toString()) {
             //if cumulative
@@ -179,9 +183,9 @@ export class TimeSeriesUtils {
       let sumOfExpense:number = 0;
 
         transactions.forEach(transaction => {
-          if (transaction.value > 0) {
+          if (transaction.value > 0 && transaction.completed) {
               sumOfIncome += transaction.value;
-          }else{
+          }else if(transaction.completed){
               sumOfExpense += Math.abs(transaction.value);
           }
         })

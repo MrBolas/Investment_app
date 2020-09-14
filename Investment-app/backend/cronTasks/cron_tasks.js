@@ -186,8 +186,9 @@ function createTransaction(periodic_transaction, new_date){
     const new_transaction = {
         id: new_id,
         value: periodic_transaction.value,
-        short_description: periodic_transaction.short_description,
-        long_description: periodic_transaction.long_description,
+        description: periodic_transaction.description,
+        additional_information: periodic_transaction.additional_information,
+        completed: false,
         date: new Date(new_date),
         date_string: '',
         booker: periodic_transaction.booker,

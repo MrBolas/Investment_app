@@ -1,8 +1,9 @@
 export interface Transaction {
     id: string;
     value: number;
-    short_description: string;
-    long_description: string;
+    description: string;
+    additional_information: string;
+    completed: boolean;
     date: Date;
     date_string: String;
     booker?: string;

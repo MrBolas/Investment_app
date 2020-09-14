@@ -53,15 +53,30 @@ table {
 }
 
 .mat-column-Action {
-  flex: 0 0 60px;
+  flex: 0 0 120px;
 }
 
 .mat-column-Date {
-  flex: 0 0 300px;
+  flex: 0 0 220px;
 }
 .mat-column-value {
   flex: 0 0 5%;
 }
-.mat-column-short_description {
+.mat-column-description {
   flex: 0 0 20%;
+}
+
+.completed-button-success{
+  color: honeydew;
+  background-color: green;
+}
+
+.completed-button-failure{
+  color: crimson;
+  background-color: white;
+}
+
+.deleted-transaction-button{
+  color: crimson;
+  background-color: white;
 }
