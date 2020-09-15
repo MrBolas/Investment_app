@@ -168,7 +168,7 @@
 </mat-expansion-panel>
 </mat-accordion>
 
-<mat-table [dataSource]="transactions" class="mat-elevation-z8">
+<mat-table [dataSource]="transactions" matSort class="mat-elevation-z8" >
   
   <!-- Action Column -->
   <ng-container matColumnDef="Action">
@@ -189,19 +189,27 @@
   
   <!-- Date Column -->
   <ng-container matColumnDef="Date">
-    <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef mat-sort-header="Date"> 
+      <button mat-icon-button (click)="toggleSort('Date')" >Date</button>
+        <mat-icon *ngIf="sortByDate && sortByAscending">arrow_drop_up</mat-icon>
+        <mat-icon *ngIf="sortByDate && !sortByAscending">arrow_drop_down</mat-icon>
+    </mat-header-cell>
     <mat-cell *matCellDef="let transaction"> {{transaction.date_string}} </mat-cell>
   </ng-container>
   
   <!-- Value Column -->
   <ng-container matColumnDef="value">
-    <mat-header-cell *matHeaderCellDef> Value </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef mat-sort-header="value"> 
+      <button mat-icon-button (click)="toggleSort('Value')" >Value</button>
+      <mat-icon *ngIf="!sortByDate && sortByAscending">arrow_drop_up</mat-icon>
+      <mat-icon *ngIf="!sortByDate && !sortByAscending">arrow_drop_down</mat-icon>
+    </mat-header-cell>
     <mat-cell *matCellDef="let transaction"> {{transaction.value}} € </mat-cell>
   </ng-container>
   
   <!-- Short descirption Column -->
   <ng-container matColumnDef="description">
-    <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef mat-sort-header="description"> Description </mat-header-cell>
     <mat-cell *matCellDef="let transaction"> 
       <button #transaction (click)="onButtonClick(transaction)" mat-button matTooltip="{{transaction.additional_information}}">
         {{transaction.description}} 

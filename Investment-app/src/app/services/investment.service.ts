@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
 import { map, audit } from "rxjs/operators";
 
 import { environment } from '../../environments/environment';
-import { CdkFixedSizeVirtualScroll } from '@angular/cdk/scrolling';
+
 
 @Injectable({providedIn: 'root'})
 export class InvestmentService {

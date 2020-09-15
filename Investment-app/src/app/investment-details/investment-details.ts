@@ -1,22 +1,26 @@
 import {Component, OnInit, OnDestroy, NgModule} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { InvestmentService } from '../services/investment.service';
-import { AuthService } from "../auth/auth.service";
 import { NgForm, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 import { House } from '../models/house.model';
 import { Transaction } from "../models/transaction.model";
 import { Income } from "../models/income.model";
 import { Expense } from "../models/expense.model";
-import { Subscription } from 'rxjs';
+import { PeriodicTransaction } from '../models/periodicTransaction.model';
+import { TableCollumns, UserProfile } from '../models/userProfile.model';
+
+import { InvestmentService } from '../services/investment.service';
+import { AuthService } from "../auth/auth.service";
+import { UserProfileService } from '../services/userProfile.service';
 
 import { BookerUtils } from "../helper/booker_utils";
 import { TimeSeriesUtils } from "../helper/time_series_utils";
 import { ChartOptions } from "./chart_options";
 import { PeriodicityUtils } from "../helper/periodicity_utils";
-import { PeriodicTransaction } from '../models/periodicTransaction.model';
+import { SortingUtils } from '../helper/sorting_utils';
 
 @Component({
   selector: 'app-investment-details',
@@ -27,6 +31,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     private investmentId: string;
     private investmentSub : Subscription;
     private authSub : Subscription;
+    private userProfileSub : Subscription;
    
     // charts options
     chart1_options = ChartOptions.getChart1Options();
@@ -37,6 +42,14 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     chart3_results :any = [];
     cumulative_checkbox = true;
    
+    //Table options handling
+    table_options: {
+      orderBy: number,
+      ascending: boolean,
+    };
+    sortByDate: boolean = true;
+    sortByAscending: boolean = true;
+
     pipe = new DatePipe('en-US');
     value :string; description :string; additional_information :string; 
     reservation_code :string; reservationOptionSelected = '';
@@ -58,10 +71,12 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
 
     //Authentication
     userIsAuthenticated = false;
+    userProfile: UserProfile;
 
     constructor(
         public investmentService: InvestmentService,
         private authService :AuthService,
+        private userProfileService :UserProfileService,
         private router: Router,
         public route: ActivatedRoute,
         public _snackBar:MatSnackBar,
@@ -71,6 +86,24 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     //get data from ID
     this.loaded = false;
     this.periodicityOptions = PeriodicityUtils.getPeriodicityMap();
+
+    this.userProfileService.getLatestUserProfile();
+    this.userProfile = this.userProfileService.getUserProfile();
+    console.log(this.userProfile);
+    this.userProfileSub = this.userProfileService.getUserProfileUpdateListener()
+    .subscribe(userProfile => {
+      this.userProfile = userProfile;
+      this.table_options = this.userProfile.viewOptions.detailsView.table;
+      if (this.table_options.orderBy == TableCollumns.Date) 
+      {this.sortByDate = true;}
+      else{this.sortByDate = false;}
+
+      if (this.table_options.ascending) 
+      {this.sortByAscending = true;}
+      else{this.sortByAscending = false;}
+      console.log(this.userProfile);
+    })
+
 
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authSub = this.authService.getAuthStatusListener()
@@ -92,6 +125,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
           this.loaded = true;
           this.house = house;
           this.transactions = [...this.house.incomeList, ...this.house.expenseList];
+          this.transactions = SortingUtils.sortTransactions(this.transactions, this.userProfile);
           this.calculateNet();
           this.ParseChartData();
           this.preprocessing();
@@ -261,6 +295,33 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       this.displaySnackBar('Expense '+transaction.description+' deleted.');
       this.netValue = this.netValue + transaction.value;
     }
+  }
+
+  toggleSort(column:string){
+    //Sorted column selection
+    switch (column) {
+      case 'Date':
+        this.table_options.orderBy = TableCollumns.Date;
+        this.table_options.ascending = !this.table_options.ascending;
+
+        this.sortByDate = true; // View control variable
+        this.sortByAscending = this.table_options.ascending;
+        break;
+        case 'Value':
+          this.table_options.orderBy = TableCollumns.Value;
+          this.table_options.ascending = !this.table_options.ascending;
+
+          this.sortByDate = false; // View control variable
+          this.sortByAscending = this.table_options.ascending;
+        break;
+      default:
+        break;
+    }
+    this.userProfile.viewOptions.detailsView.table = this.table_options;
+    this.userProfileService.updateUserProfile(this.userProfile);
+    this.transactions = SortingUtils.sortTransactions(this.transactions, this.userProfile);
+    //re-assigning data makes the ng-table to refresh
+    this.transactions = this.transactions.slice() 
   }
 
   toggleTransactionCompletion(transaction: Transaction){

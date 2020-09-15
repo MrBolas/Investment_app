@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     token: { type: String, required: true },
-    investments: [{type: mongoose.Schema.Types.ObjectId, required: false, ref: 'House'}]
+    investments: [{type: mongoose.Schema.Types.ObjectId, required: false, ref: 'House'}],
+    userProfile: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'UserProfile'}
 });
 
 userSchema.methods.generateAuthToken = async function () {

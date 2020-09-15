@@ -57,13 +57,10 @@ table {
 }
 
 .mat-column-Date {
-  flex: 0 0 220px;
+  flex: 0 0 210px;
 }
 .mat-column-value {
-  flex: 0 0 5%;
-}
-.mat-column-description {
-  flex: 0 0 20%;
+  flex: 0 0 70px;
 }
 
 .completed-button-success{

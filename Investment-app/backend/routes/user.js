@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 const logger = require('../helper/logger');
 
 const User = require("../models/user");
+const UserProfile = require('../models/userProfile');
 const checkAuth = require("../middleware/check-auth");
-const { findOneAndUpdate } = require("../models/user");
 const router = express.Router();
 
 router.post("/signup", (req, res, next)=>{
@@ -14,11 +14,13 @@ router.post("/signup", (req, res, next)=>{
     
     bcrypt.hash(req.body.password, 10)
     .then(hash =>{
+        const userProfile = new UserProfile();
+        
         user = new User({
             email: req.body.email,
-            password: hash
+            password: hash,
+            userProfile: userProfile
         });
-
         return user.generateAuthToken();
         //return user.save()
     })
@@ -27,6 +29,13 @@ router.post("/signup", (req, res, next)=>{
             throw {error_code: 1, http_code: 500, message: "SignUp failed."};
         }
         user.token = new_token;
+
+        return user.userProfile.save()
+    })
+    .then( saved_userProfile => {
+        if (!saved_userProfile) {
+            throw {error_code: 2, http_code: 500, message: "SignUp failed."};
+        }
         res.status(201).json({
             message:'User created!',
             user: user
@@ -38,7 +47,13 @@ router.post("/signup", (req, res, next)=>{
             res.status(500).json({
                 error: err
             });
-            logger.http(`Post request Failure for Signup:\nEmail: ${user.email} \nHash Password: ${user.password}`)
+            logger.error(`Post request Failure for Signup:\nEmail: ${user.email} \nHash Password: ${user.password}`)
+        }
+        if (err.error_code == 2) {   
+            res.status(500).json({
+                error: err
+            });
+            logger.error(`Post request Failure in user profile:\nEmail: ${user.email} \nHash Password: ${user.password}`)
         }else{
             logger.error(`Signup failed: ${err}`)
         }
@@ -74,18 +89,19 @@ router.post("/login", (req, res, next) =>{
         });
     })
     .catch(err => {
-        logger.error(`${err.message} `)
         if (err.error_code == 1) {
+            logger.error(`${err.message} `)
             return res.status(401).json({
                 message: err.message
             })
         }else if(err.error_code == 2){
+            logger.error(`${err.message} `)
             return res.status(401).json({
                 message: err.message
             })
         }
         else{
-            console.log(err)
+            logger.error(`${err} `)
             return res.status(401).json({
                 message: err
             });
@@ -104,7 +120,82 @@ router.post("/logout", checkAuth, (req, res, next) =>{
         })
         .catch(err => {
             res.status(500).send();
+            logger.error(`${user.email} logging out.`, err)
         })
+})
+
+
+/** GET REST route for user profile options
+ * @returns the user profile
+ */
+router.get("/me", checkAuth, (req, res, next) => {
+    User.findOne({email: req.user.email})
+    .then(user => {
+        if (!user) {
+            throw {error_code: 1, http_code: 404, message: "Auth failed."}
+        }
+        return user.populate('userProfile').execPopulate();
+    })
+    .then( user => {
+        //console.log(user)
+        res.status(200).json({
+            message: `${user.email} user profile sent.`,
+            userProfile: user.userProfile
+        })
+        logger.http(`${req.method} request for ${user.email} user profile.`)
+    })
+    .catch(err => {
+        if (err.error_code == 1)
+        {
+            logger.error(`${req.method} request for ${user.email} user profile failed with error ${err.http_code}.`)
+            return res.status(err.http_code).json({
+                message: err.message
+            })
+        }
+        else{
+            logger.error(`${req.method} request for ${user.email} user profile failed with error 500.`)
+            return res.status(500).json({
+                message: err
+            })
+        }
+    })
+})
+
+
+router.put('/me', checkAuth, (req, res, next) => {
+
+    User.findOne({email: req.user.email})
+    .then(user => {
+        if (!user) {
+            throw {error_code: 1, http_code: 404, message: "Auth failed."}
+        }
+        return user.populate('userProfile').execPopulate();
+    })    
+    .then( user => {
+        return UserProfile.findByIdAndUpdate({_id: user.userProfile._id});
+    })
+    .then(userProfile => {
+        res.status(200).json({
+            message: `User profile updated.`,
+            userProfile: userProfile
+        })
+        logger.http(`${req.method} request to update user profile.`)
+    })
+    .catch( err => {
+        if (err.error_code == 1)
+        {
+            logger.error(`${req.method} request for user profile failed with error ${err.http_code}.`)
+            return res.status(err.http_code).json({
+                message: err.message
+            })
+        }
+        else{
+            logger.error(`${req.method} request for user profile failed with error 500.`)
+            return res.status(500).json({
+                message: err
+            })
+        }
+    })
 })
 
 module.exports = router;
