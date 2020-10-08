@@ -25,6 +25,7 @@ import { SortingUtils } from '../helper/sorting_utils';
 
 import { AddManagerDialog } from "./addManagerDialog/add-manager-dialog";
 import { RemoveManagerDialog } from "./removeManagerDialog/remove-manager-dialog";
+import { ConfirmTransactionDeletionDialog } from './confirmTransactionDeletionDialog/confirm-transaction-deletion-dialog';
 
 @Component({
   selector: 'app-investment-details',
@@ -84,7 +85,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         private router: Router,
         public route: ActivatedRoute,
         public _snackBar:MatSnackBar,
-        public managerDialog: MatDialog
+        public dialogWindow: MatDialog
     ){}
 
   ngOnInit(){
@@ -289,7 +290,14 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     form.resetForm();
 }
 
-  onDeleteTableEntry(transaction:Transaction){
+  onDeleteTableEntry(transaction:Transaction)
+  {
+    //Run confirmation dialog
+    this.confirmTransactionDeletionDialog(transaction);
+  }
+
+  deleteTransaction(transaction:Transaction)
+  {
     if (transaction.value >= 0) {
       this.investmentService.removeIncome(this.house, transaction);
       this.displaySnackBar('Income '+transaction.description+' deleted.');
@@ -350,7 +358,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
   }
 
   openAddManagerDialog(): void {
-    const dialogRef = this.managerDialog.open(AddManagerDialog, {
+    const dialogRef = this.dialogWindow.open(AddManagerDialog, {
       width: '300px',
     });
 
@@ -371,7 +379,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
   }
   
   openRemoveManagerDialog(manager_email): void {
-    const dialogRef = this.managerDialog.open(RemoveManagerDialog, {
+    const dialogRef = this.dialogWindow.open(RemoveManagerDialog, {
       width: '300px', 
     });
     
@@ -384,6 +392,22 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         const updated_managers = this.house.managers.filter(manager => manager !== manager_email);
         this.house.managers = updated_managers;
         this.displaySnackBar(`${manager_email} has been deleted as manager.`)
+      }
+    });
+  }
+
+  confirmTransactionDeletionDialog(transaction: Transaction): void {
+    const dialogRef = this.dialogWindow.open(ConfirmTransactionDeletionDialog, {
+      width: '300px', 
+    });
+
+    dialogRef.afterClosed().subscribe(deletion_confirmed => {
+      
+      if (deletion_confirmed) {
+        this.deleteTransaction(transaction);
+      }
+      else{
+        this.displaySnackBar('Transaction '+transaction.description+' not deleted.');
       }
     });
   }
