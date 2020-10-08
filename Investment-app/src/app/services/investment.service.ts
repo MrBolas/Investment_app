@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { map, audit } from "rxjs/operators";
 
 import { environment } from '../../environments/environment';
+import { Transaction } from '../models/transaction.model';
 
 
 @Injectable({providedIn: 'root'})
@@ -87,6 +88,15 @@ export class InvestmentService {
             this.houses = updatedInvestments;
             this.housesUpdated.next([...this.houses]);
         })
+    }
+
+    updateTransaction(house: House, transaction_entry: Transaction )
+    {
+        if (transaction_entry.value > 0) {
+            this.updateIncome(house, transaction_entry);
+        }else{
+            this.updateExpense(house, transaction_entry);
+        }
     }
 
     updateIncome(house :House, income_entry: Income){

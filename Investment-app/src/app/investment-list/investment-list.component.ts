@@ -6,7 +6,8 @@ import { House } from "../models/house.model";
 import { InvestmentService } from '../services/investment.service';
 import { Subscription } from 'rxjs';
 
-import {FileTransfer } from "../helper/file_transfer_utils";
+import { environment } from "../../environments/environment";
+import { FileTransfer } from "../helper/file_transfer_utils";
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class InvestmentListComponent implements OnInit, OnDestroy {
   userIsAuthenticated = false;
   private investmentSub: Subscription;
   private authSub: Subscription;
+  public dev_env = !environment.production;
 
   constructor(
     public investmentService: InvestmentService,

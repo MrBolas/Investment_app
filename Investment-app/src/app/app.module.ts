@@ -38,6 +38,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { AddManagerDialog } from './investment-details/addManagerDialog/add-manager-dialog';
 import { RemoveManagerDialog } from "./investment-details/removeManagerDialog/remove-manager-dialog";
 import { ConfirmTransactionDeletionDialog } from './investment-details/confirmTransactionDeletionDialog/confirm-transaction-deletion-dialog';
+import { EditTransactionDialog } from './investment-details/editTransactionDialog/edit-transaction-dialog';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ConfirmTransactionDeletionDialog } from './investment-details/confirmTr
     AddManagerDialog,
     RemoveManagerDialog,
     ConfirmTransactionDeletionDialog,
+    EditTransactionDialog,
     LoginComponent,
     SignupComponent,
     SafePipe

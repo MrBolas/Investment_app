@@ -26,6 +26,7 @@ import { SortingUtils } from '../helper/sorting_utils';
 import { AddManagerDialog } from "./addManagerDialog/add-manager-dialog";
 import { RemoveManagerDialog } from "./removeManagerDialog/remove-manager-dialog";
 import { ConfirmTransactionDeletionDialog } from './confirmTransactionDeletionDialog/confirm-transaction-deletion-dialog';
+import { EditTransactionDialog } from './editTransactionDialog/edit-transaction-dialog';
 
 @Component({
   selector: 'app-investment-details',
@@ -59,7 +60,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     value :string; description :string; additional_information :string; 
     reservation_code :string; reservationOptionSelected = '';
     periodicityOptionSelected = '';
-    date :string; end_date:string;
+    date :string;
     reservationOptionsControl = new FormControl('');
     periodicityOptionsControl = new FormControl('');
     periodicityOptions: Object;
@@ -292,8 +293,14 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
 
   onDeleteTableEntry(transaction:Transaction)
   {
-    //Run confirmation dialog
+    //Open confirmation dialog
     this.confirmTransactionDeletionDialog(transaction);
+  }
+
+  onEditTableEntry(transaction:Transaction)
+  {
+    //Open edit dialog window
+    this.openEditTransactionDialog(transaction);
   }
 
   deleteTransaction(transaction:Transaction)
@@ -410,5 +417,19 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         this.displaySnackBar('Transaction '+transaction.description+' not deleted.');
       }
     });
+  }
+
+  openEditTransactionDialog(transaction:Transaction) 
+  {
+    const dialogRef = this.dialogWindow.open(EditTransactionDialog, {
+      width: '280px', 
+      data: {
+        transaction: transaction
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(updated_transaction => {
+      this.investmentService.updateTransaction(this.house, updated_transaction);
+    })
   }
 }

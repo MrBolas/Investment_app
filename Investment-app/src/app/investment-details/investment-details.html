@@ -245,9 +245,12 @@
         </button>
 
         <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="onEditTableEntry(transaction)"  class="edit-transaction-button">
+              <mat-icon class="edit-transaction-button" >edit</mat-icon> Edit 
+            </button> 
           <button mat-menu-item (click)="onDeleteTableEntry(transaction)" class="deleted-transaction-button">
               <mat-icon class="deleted-transaction-button" >delete</mat-icon> Delete 
-            </button> <!--Add a new icon for this-->
+            </button> 
         </mat-menu>
 
       </mat-cell>
