@@ -15,7 +15,17 @@ export class AuthService {
     private user_email: string;
     private authStatusListener = new Subject<boolean>();
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(private http: HttpClient, private router: Router) {
+
+        const user_local_saved_data = localStorage.getItem('user_data');
+        if (user_local_saved_data) {
+            const user_data = JSON.parse(user_local_saved_data);
+            this.user_email = user_data.email;
+            this.token = user_data.token;
+            this.isAuthenticated = true;
+            this.authStatusListener.next(true);
+        }
+    }
 
     getToken(){
         return this.token;
@@ -38,6 +48,7 @@ export class AuthService {
         this.http.post(environment.apiUrl+"/api/user/signup", authData)
         .subscribe(response => {
             this.token = response['user'].token;
+            this.router.navigate(['/list']);
         })
     }
 
@@ -47,8 +58,13 @@ export class AuthService {
         this.http.post<{token: string}>(environment.apiUrl+"/api/user/login", authData)
         .subscribe(response => {
             this.token = response.token;
-            console.log(this.token)
             if (this.token) {
+                const user_data = 
+                {
+                    email: this.user_email, 
+                    token: this.token
+                }
+                localStorage.setItem('user_data', JSON.stringify(user_data));
                 this.isAuthenticated = true;
                 this.authStatusListener.next(true);
                 this.router.navigate(['/list']);
@@ -60,6 +76,7 @@ export class AuthService {
         this.token = null;
         this.isAuthenticated = false;
         this.authStatusListener.next(false);
+        localStorage.removeItem('user_data');
         this.router.navigate(['/']);
     }
 }

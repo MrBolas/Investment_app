@@ -63,7 +63,8 @@ import { AuthService } from "../auth/auth.service";
             form.value.location,
             incomeList,
             expenseList,
-            periodicTransactionList
+            periodicTransactionList,
+            this.authService.getUserEmail()
         );
         this.displaySnackBar('House '+form.value.name+' created.')
         form.resetForm();
@@ -100,7 +101,9 @@ import { AuthService } from "../auth/auth.service";
                     new_house.location,
                     new_house.incomeList,
                     new_house.expenseList,
-                    new_house.periodicTransactionList)
+                    new_house.periodicTransactionList,
+                    this.authService.getUserEmail()
+                )
             }        
         }
         this.displaySnackBar('House '+new_house.name+' imported.')

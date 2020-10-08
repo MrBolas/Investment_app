@@ -1,3 +1,14 @@
+.signUpButton{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.signUpCard{
+    padding: 40px 0;
+    margin: auto;
+    width: 50%;
+}
+
 mat-form-field{
     width: 100%;
 }

@@ -21,6 +21,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatMenuModule } from "@angular/material/menu";
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,6 +35,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './auth/login/login.component';
 import { SignupComponent } from './auth/signup/signup.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { AddManagerDialog } from './investment-details/addManagerDialog/add-manager-dialog';
+import { RemoveManagerDialog } from "./investment-details/removeManagerDialog/remove-manager-dialog";
 
 @NgModule({
   declarations: [
@@ -42,6 +45,8 @@ import { AuthInterceptor } from './auth/auth-interceptor';
     InvestmentListComponent,
     InvestmentCreateComponent,
     InvestmentDetailsComponent,
+    AddManagerDialog,
+    RemoveManagerDialog,
     LoginComponent,
     SignupComponent,
     SafePipe
@@ -51,6 +56,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatSlideToggleModule,
     //MatProgressBarModule,
     MatIconModule,
     MatTreeModule,

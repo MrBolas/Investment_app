@@ -21,16 +21,16 @@ export class SortingUtils {
     let ascending = userProfile.viewOptions.detailsView.table.ascending;
 
     if (ascending && orderBy == TableCollumns.Date) {
-      console.log('Ascending by Date')
+      //console.log('Ascending by Date')
       transactions = original_transactions.sort(SortingUtils.compareDatesAsc)          
     }else if (!ascending && orderBy == TableCollumns.Date) {
-      console.log('Descending by Date')
+      //console.log('Descending by Date')
       transactions = original_transactions.sort(SortingUtils.compareDatesDsc)          
     }else if (ascending && orderBy == TableCollumns.Value) {
-      console.log('Ascending by Value')
+      //console.log('Ascending by Value')
       transactions = original_transactions.sort(SortingUtils.compareValuesAsc)          
     }else if(!ascending && orderBy == TableCollumns.Value){
-      console.log('Descending by Value')
+      //console.log('Descending by Value')
       transactions = original_transactions.sort(SortingUtils.compareValuesDsc)          
     }
     return transactions;
@@ -40,8 +40,6 @@ export class SortingUtils {
   {
     let a_milliseconds = new Date(a.date).getTime();
     let b_milliseconds = new Date(b.date).getTime();
-    
-    console.log(`Compare ${a_milliseconds} with ${b_milliseconds}`)
     let comparison = 0;
     if (a_milliseconds > b_milliseconds) {
       comparison = 1;

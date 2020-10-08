@@ -10,4 +10,5 @@ export interface House {
     incomeList: Income[]; 
     expenseList: Expense[];
     periodicTransactionList: PeriodicTransaction[];
+    managers: String[];
   }

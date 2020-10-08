@@ -3,6 +3,7 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { NgForm, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 
 import { House } from '../models/house.model';
@@ -21,6 +22,9 @@ import { TimeSeriesUtils } from "../helper/time_series_utils";
 import { ChartOptions } from "./chart_options";
 import { PeriodicityUtils } from "../helper/periodicity_utils";
 import { SortingUtils } from '../helper/sorting_utils';
+
+import { AddManagerDialog } from "./addManagerDialog/add-manager-dialog";
+import { RemoveManagerDialog } from "./removeManagerDialog/remove-manager-dialog";
 
 @Component({
   selector: 'app-investment-details',
@@ -65,7 +69,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
     ];
     netValue: number = 0;
     loaded = true;
-    displayedColumns: string[] = ['Action', 'Date', 'value', 'description'];
+    displayedColumns: string[] = ['Action', 'Date', 'value', 'description','options'];
     house: House;
     transactions: Transaction[]=[];
 
@@ -80,6 +84,7 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         private router: Router,
         public route: ActivatedRoute,
         public _snackBar:MatSnackBar,
+        public managerDialog: MatDialog
     ){}
 
   ngOnInit(){
@@ -101,7 +106,6 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
       if (this.table_options.ascending) 
       {this.sortByAscending = true;}
       else{this.sortByAscending = false;}
-      console.log(this.userProfile);
     })
 
 
@@ -343,5 +347,44 @@ export class InvestmentDetailsComponent implements OnInit, OnDestroy{
         duration: 2000,
         horizontalPosition:'right'
         });
+  }
+
+  openAddManagerDialog(): void {
+    const dialogRef = this.managerDialog.open(AddManagerDialog, {
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(new_manager_email => {
+
+      if (this.house.managers.includes(new_manager_email)) {
+        this.displaySnackBar(`${new_manager_email} already is a manager in ${this.house.name}.`)
+      }else if(new_manager_email == undefined ||
+        new_manager_email == ''){
+        this.displaySnackBar(`${new_manager_email} is not a valid manager.`)
+      }else
+      {
+        this.investmentService.addManager(this.house, new_manager_email);
+        this.house.managers.push(new_manager_email);
+        this.displaySnackBar(`${new_manager_email} has been added as manager.`)
+      }
+    });
+  }
+  
+  openRemoveManagerDialog(manager_email): void {
+    const dialogRef = this.managerDialog.open(RemoveManagerDialog, {
+      width: '300px', 
+    });
+    
+    dialogRef.afterClosed().subscribe(response => {
+
+      if(this.house.managers.length <= 1){
+        this.displaySnackBar(`${manager_email} is the last manager. ${this.house.name} has to have at least one manager.`)
+      }else if(response == true){
+        this.investmentService.removeManager(this.house, manager_email)
+        const updated_managers = this.house.managers.filter(manager => manager !== manager_email);
+        this.house.managers = updated_managers;
+        this.displaySnackBar(`${manager_email} has been deleted as manager.`)
+      }
+    });
   }
 }

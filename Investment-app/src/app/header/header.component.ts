@@ -21,6 +21,10 @@ export class HeaderComponent  {
 
     ngOnInit(){
         this.userIsAuthenticated = this.authService.getIsAuth();
+        if (this.userIsAuthenticated) {
+            this.displayed_username = this.authService.getUserEmail();
+        }
+
         this.authSub = this.authService.getAuthStatusListener()
         .subscribe(isAuthenticated => {
           this.userIsAuthenticated = isAuthenticated;

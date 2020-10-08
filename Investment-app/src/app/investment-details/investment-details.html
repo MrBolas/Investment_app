@@ -1,5 +1,24 @@
 <mat-card *ngIf="loaded">
-  <h2 *ngIf="house">{{house.name}} : </h2><a *ngIf="netValue"> Net Value: {{netValue}} €</a>
+  <div class="flex-context-menu-container">
+    <h2 *ngIf="house">{{house.name}} : </h2>
+  
+    <div class="context-menu" >
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item [matMenuTriggerFor]="managersmenu">Managers</button>
+      </mat-menu>
+
+      <mat-menu #managersmenu="matMenu">
+        <button mat-menu-item *ngFor="let manager of house.managers" (click)="openRemoveManagerDialog(manager)"> <mat-icon>person_remove</mat-icon> {{manager}}</button>
+        <button mat-menu-item (click)="openAddManagerDialog()" > <mat-icon>person_add</mat-icon> Add Manager </button> <!--Add a new icon for this-->
+      </mat-menu> 
+    </div>
+  </div>
+  
+  <br>
+  <a *ngIf="netValue"> Net Value: {{netValue}} €</a>
 </mat-card>
 
 <mat-accordion>
@@ -50,8 +69,11 @@
     </div>  
     
   </div>
+  
+  <div>
+    <mat-checkbox [(ngModel)]="cumulative_checkbox" (ngModelChange)="ParseChartData()">Cumulative charts</mat-checkbox>
+  </div>
 
-  <div><mat-checkbox [(ngModel)]="cumulative_checkbox" (ngModelChange)="ParseChartData()">Cumulative charts</mat-checkbox></div>
 </mat-expansion-panel>
 </mat-accordion>
 
@@ -172,11 +194,8 @@
   
   <!-- Action Column -->
   <ng-container matColumnDef="Action">
-    <mat-header-cell *matHeaderCellDef> Delete / Complete  </mat-header-cell>
+    <mat-header-cell *matHeaderCellDef> Completed  </mat-header-cell>
     <mat-cell *matCellDef="let transaction">
-      <button (click)="onDeleteTableEntry(transaction)" mat-mini-fab class="deleted-transaction-button" aria-label="Example icon button with a menu icon">
-        <mat-icon>delete</mat-icon>
-      </button>
       <button (click)="toggleTransactionCompletion(transaction)" *ngIf="transaction.completed" mat-mini-fab class="completed-button-success">
         <mat-icon>check</mat-icon>
       </button>
@@ -185,8 +204,7 @@
       </button>
     </mat-cell>
   </ng-container>
-  
-  
+
   <!-- Date Column -->
   <ng-container matColumnDef="Date">
     <mat-header-cell *matHeaderCellDef mat-sort-header="Date"> 
@@ -216,7 +234,26 @@
       </button>
     </mat-cell>
   </ng-container>
+  
+    <!-- options Column -->
+    <ng-container matColumnDef="options">
+      <mat-header-cell *matHeaderCellDef mat-sort-header="options"> </mat-header-cell>
+      <mat-cell *matCellDef="let transaction">
+
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="onDeleteTableEntry(transaction)" class="deleted-transaction-button">
+              <mat-icon class="deleted-transaction-button" >delete</mat-icon> Delete 
+            </button> <!--Add a new icon for this-->
+        </mat-menu>
+
+      </mat-cell>
+    </ng-container>
     
+   
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>

@@ -2,6 +2,17 @@ table {
   width: 100%;
 }
 
+.flex-context-menu-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: stretch;
+}
+
+.context-menu{
+  float: right;
+}
+
 .flex-transaction-container {
   display: flex;
   justify-content: space-around;
@@ -53,7 +64,7 @@ table {
 }
 
 .mat-column-Action {
-  flex: 0 0 120px;
+  flex: 0 0 80px;
 }
 
 .mat-column-Date {
@@ -63,14 +74,19 @@ table {
   flex: 0 0 70px;
 }
 
+.mat-column-options{
+  display: flex;
+  justify-content: flex-end;
+}
+
 .completed-button-success{
   color: honeydew;
   background-color: green;
 }
 
 .completed-button-failure{
-  color: crimson;
-  background-color: white;
+  color: green;
+  background-color: honeydew;
 }
 
 .deleted-transaction-button{

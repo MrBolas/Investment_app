@@ -30,7 +30,7 @@ export class InvestmentService {
         return this.houseUpdated.asObservable();
     }
 
-    addHouse(name: string, adress: string, location: string, incomeList: Income[], expenseList: Expense[], periodicTransactionList: PeriodicTransaction[]){
+    addHouse(name: string, adress: string, location: string, incomeList: Income[], expenseList: Expense[], periodicTransactionList: PeriodicTransaction[], manager: string){
         const house: House = {
             id: null,
             name: name,
@@ -38,7 +38,8 @@ export class InvestmentService {
             location: location,
             incomeList: incomeList,
             expenseList: expenseList,
-            periodicTransactionList: periodicTransactionList
+            periodicTransactionList: periodicTransactionList,
+            managers: [manager]
         };
         this.http.post<{message: string, houseId: string}>(environment.apiUrl+'/api/house', house)
         .subscribe((responseData)=>{
@@ -233,6 +234,25 @@ export class InvestmentService {
         this.http.put(environment.apiUrl+'/api/house/'+house['_id'], house)
         .subscribe((responseData)=>{
             this.house = house;
+            this.houseUpdated.next(this.house);
+            this.router.navigate(["/house/"+house['_id']]);
+        })
+    }
+
+    addManager(house: House, new_manager_email: string){
+        this.http.post<{message: string, house: House}>(environment.apiUrl+'/api/house/manager/'+house['_id'], {new_manager_email})
+        .subscribe((response)=>{
+            this.house.managers.push(new_manager_email);
+            this.houseUpdated.next(response.house);
+            this.router.navigate(["/house/"+house['_id']]);
+        })
+    }
+    
+    removeManager(house: House, manager_email: string){
+        this.http.delete<{message: string, house: House}>(environment.apiUrl+'/api/house/manager/'+house['_id']+'/'+manager_email)
+        .subscribe((response)=>{
+            const updated_managers = this.house.managers.filter(manager => manager !== manager_email);
+            this.house.managers = updated_managers;
             this.houseUpdated.next(this.house);
             this.router.navigate(["/house/"+house['_id']]);
         })

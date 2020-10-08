@@ -9,7 +9,8 @@ const houseSchema = mongoose.Schema({
     location: {type: String, required: true},
     incomeList: {type: Array, required: true},
     expenseList: {type: Array, required: true},
-    periodicTransactionList: {type: Array, required: true}
+    periodicTransactionList: {type: Array, required: true},
+    managers: [{type: String, required: true}]
 });
 
 module.exports = mongoose.model('House', houseSchema);
