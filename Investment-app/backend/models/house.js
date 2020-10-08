@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-//import { Income } from "./income";
-//import { Expense } from "./expense";
 
 const houseSchema = mongoose.Schema({
     //_id: {type: Number, required: true},

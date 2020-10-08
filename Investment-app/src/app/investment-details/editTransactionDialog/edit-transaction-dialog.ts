@@ -41,7 +41,7 @@ import { Transaction } from '../../models/transaction.model';
 
         this.transaction.date = new Date(this.date);
         this.transaction.date_string = this.pipe.transform(this.date, 'fullDate'),
-        this.transaction.value = this.value;
+        this.transaction.value = Number(this.value);
         this.transaction.description = this.description;
         this.transaction.additional_information = this.additional_information;
 
