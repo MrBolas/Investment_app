@@ -1,17 +1,17 @@
 # Investment app / Manage Vault
 
 ## Summary
-Manage Vault or Investment App it's a personal project intended to control financial investments in real estate. Truth be told, it's built in a generic fashion allowing the control even a commom household with commom expenses.
+Manage Vault or Investment App it's a personal project intended to control financial investments in real estate. Truth be told, it's built in a generic fashion allowing the control even a common household with common expenses.
 
 The app allows a control of income and expenses, periodic or singular and a visual evolution of both values through three charts that range in three different time spans.
 
-Initially the app was intended to have more functionality than it has in the momment, the missing features are added when i have available time to dedicate to this project.
+Initially the app was intended to have more functionality than it has in the moment, the missing features are added when i have available time to dedicate to this project.
 
 The app is served in a docker in a small server that i have deployed.
 You can try out the app [here](http://94.62.211.190:8082/).
 
 ## Motivation
-This project was born from the need to control an investment from family members to allow a more reasonable and delicate overview of the investment as a potential business, and to understand the effect of certain actions could have on potential revenew of the investment.
+This project was born from the need to control an investment from family members to allow a more reasonable and delicate overview of the investment as a potential business, and to understand the effect of certain actions could have on potential reveneu of the investment.
 
 ## Features
 * **Income and Expenses listing** -> Like any expenses app, a detailed form of reading the expenses is needed. In this case i've chosen a list ordered by date.
