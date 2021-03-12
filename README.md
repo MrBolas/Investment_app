@@ -11,7 +11,7 @@ The app is served in a docker in a small server that i have deployed.
 You can try out the app [here](http://94.62.211.190:8082/).
 
 ## Motivation
-This project was born from the need to control an investment from family members to allow a more reasonable and delicate overview of the investment as a potential business, and ot understand the effect of certain actions could have on potential revenew of the investment.
+This project was born from the need to control an investment from family members to allow a more reasonable and delicate overview of the investment as a potential business, and to understand the effect of certain actions could have on potential revenew of the investment.
 
 ## Features
 * **Income and Expenses listing** -> Like any expenses app, a detailed form of reading the expenses is needed. In this case i've chosen a list ordered by date.
